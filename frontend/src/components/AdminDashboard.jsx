@@ -3,7 +3,7 @@ import {
   Users, MapPin, DollarSign, Compass, Activity, Search, Filter,
   Plus, Edit, Trash2, ShieldAlert, CheckCircle, Clock, TrendingUp,
   BarChart3, PieChart, Star, ExternalLink, RefreshCw, Train, Car,
-  ShieldCheck, Database, Headphones, FileText, ChevronRight, X, AlertCircle
+  ShieldCheck, Database, Headphones, FileText, ChevronRight, X, AlertCircle, UserPlus, Check
 } from 'lucide-react';
 import { BookingVoucherModal } from './BookingVoucherModal';
 
@@ -16,39 +16,50 @@ export const AdminDashboard = () => {
   const [apiStats, setApiStats] = useState(null);
   const [usersList, setUsersList] = useState([]);
   const [bookingsList, setBookingsList] = useState([]);
+  const [trainsList, setTrainsList] = useState([]);
+  const [cabsList, setCabsList] = useState([]);
   const [ticketsList, setTicketsList] = useState([]);
   const [dbStatus, setDbStatus] = useState('Connecting...');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Selected Booking Modal State
+  // Selected Booking Voucher Modal State
   const [selectedVoucherBooking, setSelectedVoucherBooking] = useState(null);
 
-  // Custom Add Train Modal
+  // Modals Open State
+  const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [isAddTrainOpen, setIsAddTrainOpen] = useState(false);
-  const [newTrain, setNewTrain] = useState({ name: '', number: '', from: '', to: '', fare: 1450 });
+  const [isAddCabOpen, setIsAddCabOpen] = useState(false);
 
-  // Load Realtime Data from MongoDB REST API Backend
+  // New Form Data States
+  const [newUser, setNewUser] = useState({ name: '', email: '', role: 'Traveler', password: 'password123' });
+  const [newTrain, setNewTrain] = useState({ trainName: '', trainNumber: '', from: 'NDLS', to: 'JP', fare: 1450 });
+  const [newCab, setNewCab] = useState({ name: '', category: 'Compact & Economical', seats: 4, basePrice: 1450, features: 'AC, GPS, Sanitized' });
+
+  // Load Realtime Data from Backend MongoDB REST API
   const fetchAdminData = async () => {
     setIsLoading(true);
     try {
-      // 1. Fetch live DB Status & Stats
-      const [resStatus, resStats, resUsers, resBookings, resTickets] = await Promise.all([
+      const [resStatus, resStats, resUsers, resBookings, resTrains, resCabs, resTickets] = await Promise.all([
         fetch('http://localhost:5000/api/db-status').then(r => r.json()).catch(() => null),
         fetch('http://localhost:5000/api/admin/stats').then(r => r.json()).catch(() => null),
         fetch('http://localhost:5000/api/admin/users').then(r => r.json()).catch(() => null),
         fetch('http://localhost:5000/api/admin/bookings').then(r => r.json()).catch(() => null),
+        fetch('http://localhost:5000/api/trains/search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) }).then(r => r.json()).catch(() => null),
+        fetch('http://localhost:5000/api/cabs/search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) }).then(r => r.json()).catch(() => null),
         fetch('http://localhost:5000/api/support/tickets').then(r => r.json()).catch(() => null),
       ]);
 
       if (resStatus && resStatus.connected) {
         setDbStatus(`MongoDB Connected (${resStatus.databaseName})`);
       } else {
-        setDbStatus('Hybrid Storage Mode');
+        setDbStatus('Hybrid Storage Active');
       }
 
       if (resStats?.stats) setApiStats(resStats.stats);
       if (resUsers?.users) setUsersList(resUsers.users);
       if (resBookings?.bookings) setBookingsList(resBookings.bookings);
+      if (resTrains?.trains) setTrainsList(resTrains.trains);
+      if (resCabs?.availableCabs) setCabsList(resCabs.availableCabs);
       if (resTickets?.tickets) setTicketsList(resTickets.tickets);
     } catch (err) {
       console.warn('Admin API fetch warning:', err);
@@ -61,7 +72,7 @@ export const AdminDashboard = () => {
     fetchAdminData();
   }, []);
 
-  // Filtered Users
+  // Filtered Users List
   const filteredUsers = usersList.filter(u => {
     const q = searchQuery.toLowerCase();
     const matchSearch = (u.name || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q);
@@ -69,22 +80,147 @@ export const AdminDashboard = () => {
     return matchSearch && matchRole;
   });
 
-  // Filtered Bookings
+  // Filtered Bookings List
   const filteredBookings = bookingsList.filter(b => {
     const q = searchQuery.toLowerCase();
     return (b.pnr || '').toLowerCase().includes(q) || (b.title || '').toLowerCase().includes(q) || (b.primaryPassenger || '').toLowerCase().includes(q);
   });
 
-  // Add Train Handler
-  const handleAddTrainSubmit = (e) => {
+  // --- DYNAMIC ADMIN ACTIONS ---
+
+  // 1. Add New User
+  const handleAddUserSubmit = async (e) => {
     e.preventDefault();
-    if (!newTrain.name || !newTrain.number) return;
-    alert(`Train "${newTrain.name}" (${newTrain.number}) registered successfully!`);
-    setIsAddTrainOpen(false);
-    setNewTrain({ name: '', number: '', from: '', to: '', fare: 1450 });
+    if (!newUser.name || !newUser.email) return;
+
+    try {
+      const res = await fetch('http://localhost:5000/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newUser)
+      });
+      const data = await res.json();
+      if (data.user) {
+        setUsersList(prev => [data.user, ...prev]);
+        alert(`User "${data.user.name}" created successfully!`);
+      } else {
+        // Fallback
+        const created = { id: `usr-${Date.now()}`, ...newUser };
+        setUsersList(prev => [created, ...prev]);
+      }
+    } catch (err) {
+      const created = { id: `usr-${Date.now()}`, ...newUser };
+      setUsersList(prev => [created, ...prev]);
+    }
+    setIsAddUserOpen(false);
+    setNewUser({ name: '', email: '', role: 'Traveler', password: 'password123' });
   };
 
-  // Toggle Support Ticket Status
+  // 2. Toggle / Edit User Role
+  const handleUserRoleChange = async (userId, currentRole) => {
+    const nextRole = currentRole === 'Traveler' ? 'Guide' : (currentRole === 'Guide' ? 'Admin' : 'Traveler');
+    setUsersList(prev => prev.map(u => (u._id === userId || u.id === userId) ? { ...u, role: nextRole } : u));
+
+    try {
+      await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: nextRole })
+      });
+    } catch (e) {
+      // client updated
+    }
+  };
+
+  // 3. Delete User
+  const handleDeleteUser = async (userId, userName) => {
+    if (!window.confirm(`Are you sure you want to delete user "${userName}"?`)) return;
+    setUsersList(prev => prev.filter(u => u._id !== userId && u.id !== userId));
+
+    try {
+      await fetch(`http://localhost:5000/api/admin/users/${userId}`, { method: 'DELETE' });
+    } catch (e) {
+      // client updated
+    }
+  };
+
+  // 4. Update Booking Status
+  const handleBookingStatusToggle = async (bookingId, currentStatus) => {
+    const nextStatus = currentStatus?.includes('Confirmed') ? 'Pending Verification' : (currentStatus?.includes('Pending') ? 'Cancelled & Refunded' : 'Confirmed E-Ticket');
+    setBookingsList(prev => prev.map(b => (b._id === bookingId || b.pnr === bookingId) ? { ...b, status: nextStatus } : b));
+
+    try {
+      await fetch(`http://localhost:5000/api/admin/bookings/${bookingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: nextStatus })
+      });
+    } catch (e) {
+      // client updated
+    }
+  };
+
+  // 5. Delete Booking
+  const handleDeleteBooking = async (bookingId, pnr) => {
+    if (!window.confirm(`Delete booking PNR "${pnr}" permanently?`)) return;
+    setBookingsList(prev => prev.filter(b => b._id !== bookingId && b.pnr !== pnr));
+  };
+
+  // 6. Add Express Train
+  const handleAddTrainSubmit = async (e) => {
+    e.preventDefault();
+    if (!newTrain.trainName || !newTrain.trainNumber) return;
+
+    try {
+      const res = await fetch('http://localhost:5000/api/admin/trains', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newTrain)
+      });
+      const data = await res.json();
+      if (data.train) {
+        setTrainsList(prev => [data.train, ...prev]);
+      } else {
+        const created = { id: `trn-${Date.now()}`, ...newTrain, speed: 'Superfast 140 km/h', classes: [{ type: 'AC Chair Car', fare: newTrain.fare, status: 'AVAILABLE-030' }], rating: 4.85 };
+        setTrainsList(prev => [created, ...prev]);
+      }
+    } catch (e) {
+      const created = { id: `trn-${Date.now()}`, ...newTrain, speed: 'Superfast 140 km/h', classes: [{ type: 'AC Chair Car', fare: newTrain.fare, status: 'AVAILABLE-030' }], rating: 4.85 };
+      setTrainsList(prev => [created, ...prev]);
+    }
+    setIsAddTrainOpen(false);
+    setNewTrain({ trainName: '', trainNumber: '', from: 'NDLS', to: 'JP', fare: 1450 });
+  };
+
+  // 7. Add Cab Vehicle
+  const handleAddCabSubmit = async (e) => {
+    e.preventDefault();
+    if (!newCab.name) return;
+
+    const featureArray = typeof newCab.features === 'string' ? newCab.features.split(',').map(f => f.trim()) : newCab.features;
+
+    try {
+      const res = await fetch('http://localhost:5000/api/admin/cabs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...newCab, features: featureArray })
+      });
+      const data = await res.json();
+      if (data.cab) {
+        setCabsList(prev => [data.cab, ...prev]);
+      } else {
+        const created = { id: `cab-${Date.now()}`, ...newCab, features: featureArray, rating: 4.9, image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=500&q=80' };
+        setCabsList(prev => [created, ...prev]);
+      }
+    } catch (e) {
+      const created = { id: `cab-${Date.now()}`, ...newCab, features: featureArray, rating: 4.9, image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=500&q=80' };
+      setCabsList(prev => [created, ...prev]);
+    }
+    setIsAddCabOpen(false);
+    setNewCab({ name: '', category: 'Compact & Economical', seats: 4, basePrice: 1450, features: 'AC, GPS, Sanitized' });
+  };
+
+  // 8. Toggle Support Ticket Status
   const handleTicketStatusChange = (tktId) => {
     setTicketsList(prev => prev.map(t => {
       if (t.ticketId === tktId || t._id === tktId) {
@@ -120,34 +256,44 @@ export const AdminDashboard = () => {
                 <Database size={13} /> {dbStatus}
               </span>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                System Version 2.4.0 • Realtime Control Suite
+                Live Control Suite • Realtime MongoDB Sync
               </span>
             </div>
             <h1 style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em', margin: 0 }}>
-              GlobeTrotter Admin Console
+              GlobeTrotter Dynamic Admin Console
             </h1>
             <p style={{ fontFamily: '"Caveat", cursive', fontSize: '1.4rem', color: 'var(--color-primary)', margin: 0, fontWeight: 700 }}>
-              Supervise multi-city bookings, live trains, cab dispatches & MongoDB databases
+              Manage users, edit roles, inspect multi-stop bookings, dispatch cabs & trains
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
             <button
               onClick={fetchAdminData}
               className="btn btn-outline"
               style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-              title="Refresh MongoDB Data"
+              title="Sync Live MongoDB"
             >
               <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
               <span>Sync DB</span>
             </button>
+
+            <button
+              onClick={() => setIsAddUserOpen(true)}
+              className="btn btn-outline"
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            >
+              <UserPlus size={16} />
+              <span>Add User</span>
+            </button>
+
             <button
               onClick={() => setIsAddTrainOpen(true)}
               className="btn btn-primary"
               style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
               <Plus size={18} />
-              <span>Add Express Train</span>
+              <span>Add Train</span>
             </button>
           </div>
         </div>
@@ -165,8 +311,8 @@ export const AdminDashboard = () => {
             { id: 'overview', label: 'Overview KPIs', icon: <BarChart3 size={17} /> },
             { id: 'users', label: 'User Directory', icon: <Users size={17} />, count: usersList.length },
             { id: 'bookings', label: 'Bookings Vault', icon: <Compass size={17} />, count: bookingsList.length },
-            { id: 'trains', label: 'Train Operations', icon: <Train size={17} /> },
-            { id: 'cabs', label: 'Cab Fleets', icon: <Car size={17} /> },
+            { id: 'trains', label: 'Train Operations', icon: <Train size={17} />, count: trainsList.length },
+            { id: 'cabs', label: 'Cab Fleets', icon: <Car size={17} />, count: cabsList.length },
             { id: 'tickets', label: 'Support Queue', icon: <Headphones size={17} />, count: ticketsList.length },
           ].map(tab => (
             <button
@@ -231,7 +377,7 @@ export const AdminDashboard = () => {
               {apiStats?.totalRevenue || '₹15,95,000'}
             </h3>
             <span style={{ fontSize: '0.75rem', color: 'var(--accent-text)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
-              <TrendingUp size={12} /> +22.4% vs last month
+              <TrendingUp size={12} /> Live Multi-Stop Sales
             </span>
           </div>
         </div>
@@ -250,7 +396,7 @@ export const AdminDashboard = () => {
               Active Users
             </span>
             <h3 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, lineHeight: 1.1 }}>
-              {apiStats?.activeUsers || (usersList.length + 1850).toLocaleString()}
+              {usersList.length}
             </h3>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>MongoDB Accounts</span>
           </div>
@@ -267,32 +413,32 @@ export const AdminDashboard = () => {
           </div>
           <div>
             <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', fontWeight: 700 }}>
-              Bookings Issued
+              Bookings Vault
             </span>
             <h3 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, lineHeight: 1.1 }}>
-              {apiStats?.totalBookings || (bookingsList.length + 1420).toLocaleString()}
+              {bookingsList.length}
             </h3>
-            <span style={{ fontSize: '0.75rem', color: 'var(--accent-text)', fontWeight: 600 }}>Multi-City Itineraries</span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--accent-text)', fontWeight: 600 }}>Multi-City PNRs</span>
           </div>
         </div>
 
-        {/* Stat Card 4: Platform Rating */}
+        {/* Stat Card 4: Fleets & Services */}
         <div className="card" style={{ padding: '1.35rem', display: 'flex', alignItems: 'center', gap: '1.15rem' }}>
           <div style={{
             width: '52px', height: '52px', borderRadius: '16px',
             backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
-            <Star size={26} fill="currentColor" />
+            <Train size={26} />
           </div>
           <div>
             <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', fontWeight: 700 }}>
-              Satisfaction Score
+              Trains & Cabs
             </span>
             <h3 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, lineHeight: 1.1 }}>
-              {apiStats?.satisfactionScore || '4.98 / 5.0'}
+              {trainsList.length + cabsList.length} Units
             </h3>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Based on 4,820 reviews</span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Express & Fleet Options</span>
           </div>
         </div>
       </div>
@@ -324,10 +470,10 @@ export const AdminDashboard = () => {
               className="form-input no-icon"
               style={{ width: '160px', padding: '0.65rem', fontSize: '0.9rem', cursor: 'pointer' }}
             >
-              <option value="All">All User Roles</option>
-              <option value="Traveler">Traveler</option>
-              <option value="Guide">Guide</option>
-              <option value="Admin">Admin</option>
+              <option value="All">All Roles</option>
+              <option value="Traveler">Travelers</option>
+              <option value="Guide">Guides</option>
+              <option value="Admin">Admins</option>
             </select>
           )}
         </div>
@@ -351,10 +497,10 @@ export const AdminDashboard = () => {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
               {[
-                { route: 'Delhi ➔ Jaipur ➔ Udaipur ➔ Agra', trips: 840, percentage: 88, status: 'Peak Demand' },
-                { route: 'Mumbai ➔ Goa ➔ Bengaluru ➔ Kochi', trips: 620, percentage: 74, status: 'High Traffic' },
-                { route: 'Paris ➔ Zurich ➔ Rome ➔ Venice', trips: 410, percentage: 65, status: 'International' },
-                { route: 'Tokyo ➔ Kyoto ➔ Osaka ➔ Mt. Fuji', trips: 290, percentage: 52, status: 'Trending' }
+                { route: 'Delhi ➔ Jaipur ➔ Udaipur ➔ Agra', trips: 840, percentage: 88 },
+                { route: 'Mumbai ➔ Goa ➔ Bengaluru ➔ Kochi', trips: 620, percentage: 74 },
+                { route: 'Paris ➔ Zurich ➔ Rome ➔ Venice', trips: 410, percentage: 65 },
+                { route: 'Tokyo ➔ Kyoto ➔ Osaka ➔ Mt. Fuji', trips: 290, percentage: 52 }
               ].map((r, i) => (
                 <div key={i} style={{ padding: '0.85rem', borderRadius: '12px', backgroundColor: 'var(--bg-page)', border: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
@@ -373,30 +519,30 @@ export const AdminDashboard = () => {
           <div className="card">
             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <ShieldCheck size={20} style={{ color: 'var(--color-primary)' }} />
-              MongoDB Database Health & Operations
+              MongoDB System Health & Operations
             </h3>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
               <div style={{ padding: '0.85rem', borderRadius: '12px', backgroundColor: 'var(--bg-page)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>Mongoose Connection Pool</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Host: 127.0.0.1:27017 / Database: globetrotter</div>
-                </div>
-                <span className="badge badge-accent">ACTIVE</span>
-              </div>
-
-              <div style={{ padding: '0.85rem', borderRadius: '12px', backgroundColor: 'var(--bg-page)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>JSON E-Ticket Barcode Engine</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Auto-generates scannable 1D & 2D QR vouchers</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>MongoDB Ready State</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{dbStatus}</div>
                 </div>
                 <span className="badge badge-accent">OPERATIONAL</span>
               </div>
 
               <div style={{ padding: '0.85rem', borderRadius: '12px', backgroundColor: 'var(--bg-page)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>Express & Cab Dispatch Gateway</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>IRCTC & Chauffeur Fleet API Integration</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>E-Ticket Barcode Engine</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Auto-generates 1D PNR & 2D QR Vouchers</div>
+                </div>
+                <span className="badge badge-accent">ACTIVE</span>
+              </div>
+
+              <div style={{ padding: '0.85rem', borderRadius: '12px', backgroundColor: 'var(--bg-page)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>Express & Chauffeur Fleet Gateway</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>IRCTC & Chauffeur Dispatch API Integration</div>
                 </div>
                 <span className="badge badge-accent">CONNECTED</span>
               </div>
@@ -409,12 +555,17 @@ export const AdminDashboard = () => {
       {/* ---------------- TAB 2: USER DIRECTORY ---------------- */}
       {activeTab === 'users' && (
         <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Users size={20} style={{ color: 'var(--color-primary)' }} />
               MongoDB User Directory
             </h3>
-            <span className="badge badge-neutral">{filteredUsers.length} Users Listed</span>
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button onClick={() => setIsAddUserOpen(true)} className="btn btn-primary btn-sm">
+                <UserPlus size={14} /> Add User
+              </button>
+              <span className="badge badge-neutral">{filteredUsers.length} Users Listed</span>
+            </div>
           </div>
 
           <div className="table-responsive">
@@ -422,8 +573,8 @@ export const AdminDashboard = () => {
               <thead>
                 <tr>
                   <th>User Identity</th>
-                  <th>Role Tag</th>
-                  <th>Email</th>
+                  <th>Role (Click to Toggle)</th>
+                  <th>Email Address</th>
                   <th>Account ID</th>
                   <th style={{ textAlign: 'right' }}>Actions</th>
                 </tr>
@@ -436,42 +587,51 @@ export const AdminDashboard = () => {
                     </td>
                   </tr>
                 ) : (
-                  filteredUsers.map(user => (
-                    <tr key={user._id || user.id || user.email}>
-                      <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                          <img
-                            src={user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=C1440E&color=fff&bold=true`}
-                            alt={user.name}
-                            style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover', border: '1.5px solid var(--color-primary)' }}
-                          />
-                          <div>
-                            <div style={{ fontWeight: 800, color: 'var(--text-primary)' }}>{user.name || 'User'}</div>
-                            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Joined GlobeTrotter PRO</div>
+                  filteredUsers.map(user => {
+                    const uId = user._id || user.id || user.email;
+                    return (
+                      <tr key={uId}>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <img
+                              src={user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=C1440E&color=fff&bold=true`}
+                              alt={user.name}
+                              style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover', border: '1.5px solid var(--color-primary)' }}
+                            />
+                            <div>
+                              <div style={{ fontWeight: 800, color: 'var(--text-primary)' }}>{user.name || 'User'}</div>
+                              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Registered Account</div>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td>
-                        <span className={`badge ${user.role === 'Admin' ? 'badge-primary' : (user.role === 'Guide' ? 'badge-warning' : 'badge-neutral')}`}>
-                          {user.role || 'Traveler'}
-                        </span>
-                      </td>
-                      <td style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
-                        {user.email}
-                      </td>
-                      <td style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>
-                        {user._id || user.id || 'usr-mock'}
-                      </td>
-                      <td style={{ textAlign: 'right' }}>
-                        <button
-                          onClick={() => alert(`User "${user.name}" settings updated.`)}
-                          className="btn btn-outline btn-sm"
-                        >
-                          <Edit size={14} /> Edit
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                        </td>
+                        <td>
+                          <button
+                            onClick={() => handleUserRoleChange(uId, user.role || 'Traveler')}
+                            className={`badge ${user.role === 'Admin' ? 'badge-primary' : (user.role === 'Guide' ? 'badge-warning' : 'badge-neutral')}`}
+                            style={{ cursor: 'pointer', border: 'none' }}
+                            title="Click to switch role: Traveler ➔ Guide ➔ Admin"
+                          >
+                            {user.role || 'Traveler'} 🔄
+                          </button>
+                        </td>
+                        <td style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+                          {user.email}
+                        </td>
+                        <td style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>
+                          {uId}
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          <button
+                            onClick={() => handleDeleteUser(uId, user.name || user.email)}
+                            className="btn btn-danger btn-sm"
+                            title="Delete User Account"
+                          >
+                            <Trash2 size={14} /> Delete
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -494,12 +654,12 @@ export const AdminDashboard = () => {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>PNR Ticket Code</th>
+                  <th>PNR Code</th>
                   <th>Itinerary Title</th>
                   <th>Primary Passenger</th>
                   <th>Total Cost</th>
-                  <th>Status</th>
-                  <th style={{ textAlign: 'right' }}>E-Ticket Voucher</th>
+                  <th>Status (Click to Cycle)</th>
+                  <th style={{ textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -510,37 +670,51 @@ export const AdminDashboard = () => {
                     </td>
                   </tr>
                 ) : (
-                  filteredBookings.map(b => (
-                    <tr key={b._id || b.pnr}>
-                      <td>
-                        <span style={{ fontFamily: 'monospace', fontWeight: 800, color: 'var(--color-primary)', fontSize: '0.9rem' }}>
-                          {b.pnr}
-                        </span>
-                      </td>
-                      <td style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
-                        {b.title}
-                      </td>
-                      <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                        {b.primaryPassenger || 'Aarav Sharma'}
-                      </td>
-                      <td style={{ fontWeight: 800, color: 'var(--text-primary)' }}>
-                        ₹{(b.totalPrice || 145000).toLocaleString()}
-                      </td>
-                      <td>
-                        <span className={`badge ${b.status?.includes('Confirmed') ? 'badge-accent' : 'badge-danger'}`}>
-                          {b.status || 'Confirmed'}
-                        </span>
-                      </td>
-                      <td style={{ textAlign: 'right' }}>
-                        <button
-                          onClick={() => setSelectedVoucherBooking(b)}
-                          className="btn btn-primary btn-sm"
-                        >
-                          <FileText size={14} /> View Voucher
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                  filteredBookings.map(b => {
+                    const bId = b._id || b.pnr;
+                    return (
+                      <tr key={bId}>
+                        <td>
+                          <span style={{ fontFamily: 'monospace', fontWeight: 800, color: 'var(--color-primary)', fontSize: '0.9rem' }}>
+                            {b.pnr}
+                          </span>
+                        </td>
+                        <td style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
+                          {b.title}
+                        </td>
+                        <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                          {b.primaryPassenger || 'Aarav Sharma'}
+                        </td>
+                        <td style={{ fontWeight: 800, color: 'var(--text-primary)' }}>
+                          ₹{(b.totalPrice || 145000).toLocaleString()}
+                        </td>
+                        <td>
+                          <button
+                            onClick={() => handleBookingStatusToggle(bId, b.status || 'Confirmed E-Ticket')}
+                            className={`badge ${b.status?.includes('Confirmed') ? 'badge-accent' : (b.status?.includes('Pending') ? 'badge-warning' : 'badge-danger')}`}
+                            style={{ cursor: 'pointer', border: 'none' }}
+                            title="Click to change booking status"
+                          >
+                            {b.status || 'Confirmed E-Ticket'} 🔄
+                          </button>
+                        </td>
+                        <td style={{ textAlign: 'right', display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                          <button
+                            onClick={() => setSelectedVoucherBooking(b)}
+                            className="btn btn-primary btn-sm"
+                          >
+                            <FileText size={14} /> Voucher
+                          </button>
+                          <button
+                            onClick={() => handleDeleteBooking(bId, b.pnr)}
+                            className="btn btn-danger btn-sm"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -554,7 +728,7 @@ export const AdminDashboard = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Train size={20} style={{ color: 'var(--color-primary)' }} />
-              Live Express Train Connections & Quotas
+              Live Express Train Fleet ({trainsList.length})
             </h3>
             <button onClick={() => setIsAddTrainOpen(true)} className="btn btn-primary btn-sm">
               <Plus size={15} /> Add Express Train
@@ -562,25 +736,23 @@ export const AdminDashboard = () => {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
-            {[
-              { name: 'Vande Bharat Express', number: '20977 / VB-EXPRESS', speed: '160 km/h Bullet', from: 'New Delhi (NDLS)', to: 'Jaipur (JP)', fare: '₹1,450', rating: '4.9 ★' },
-              { name: 'Eurostar High-Speed International', number: 'EST-9014 / EUROSTAR', speed: '300 km/h High Speed', from: 'Paris Gare de Lyon', to: 'Zurich Hauptbahnhof', fare: '₹4,200', rating: '4.96 ★' },
-              { name: 'Rajdhani Superfast Express', number: '12431 / RAJDHANI', speed: '130 km/h Superfast', from: 'New Delhi (NDLS)', to: 'Mumbai Central', fare: '₹2,850', rating: '4.88 ★' }
-            ].map((t, i) => (
-              <div key={i} style={{ padding: '1.25rem', borderRadius: '16px', backgroundColor: 'var(--bg-page)', border: '1.5px solid var(--border)' }}>
+            {trainsList.map((t, i) => (
+              <div key={t._id || t.id || i} style={{ padding: '1.25rem', borderRadius: '16px', backgroundColor: 'var(--bg-page)', border: '1.5px solid var(--border)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.65rem' }}>
                   <div>
-                    <h4 style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-primary)', margin: 0 }}>{t.name}</h4>
-                    <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--color-primary)', fontWeight: 700 }}>{t.number}</span>
+                    <h4 style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-primary)', margin: 0 }}>{t.trainName}</h4>
+                    <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--color-primary)', fontWeight: 700 }}>{t.trainNumber}</span>
                   </div>
-                  <span className="badge badge-accent">{t.rating}</span>
+                  <span className="badge badge-accent">★ {t.rating || 4.9}</span>
                 </div>
                 <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.85rem' }}>
-                  {t.from} ➔ {t.to}
+                  {typeof t.from === 'object' ? t.from.name : t.from} ➔ {typeof t.to === 'object' ? t.to.name : t.to}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.65rem', borderTop: '1px solid var(--border)' }}>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{t.speed}</span>
-                  <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)' }}>{t.fare}</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{t.speed || 'Superfast 140 km/h'}</span>
+                  <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)' }}>
+                    ₹{t.classes?.[0]?.fare || 1450}
+                  </span>
                 </div>
               </div>
             ))}
@@ -594,25 +766,23 @@ export const AdminDashboard = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Car size={20} style={{ color: 'var(--color-primary)' }} />
-              Chauffeur & Airport Cab Fleet Inventory
+              Chauffeur Cab Fleet Inventory ({cabsList.length})
             </h3>
-            <span className="badge badge-accent">3 Categories Available</span>
+            <button onClick={() => setIsAddCabOpen(true)} className="btn btn-primary btn-sm">
+              <Plus size={15} /> Add Vehicle Cab
+            </button>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
-            {[
-              { name: 'Sedan (Dzire / Etios)', category: 'Compact & Economical', seats: '4 Passengers', rate: '₹1,450 base', img: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=500&q=80' },
-              { name: 'Outstation SUV (Innova Crysta)', category: 'Spacious & Family Comfort', seats: '6 Passengers', rate: '₹2,850 base', img: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500&q=80' },
-              { name: 'Luxury Chauffeur (Mercedes E-Class)', category: 'Executive VIP Transfer', seats: '3 Passengers', rate: '₹8,500 base', img: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=500&q=80' }
-            ].map((c, i) => (
-              <div key={i} style={{ borderRadius: '16px', backgroundColor: 'var(--bg-page)', border: '1.5px solid var(--border)', overflow: 'hidden' }}>
-                <img src={c.img} alt={c.name} style={{ width: '100%', height: '140px', objectFit: 'cover' }} />
+            {cabsList.map((c, i) => (
+              <div key={c._id || c.id || i} style={{ borderRadius: '16px', backgroundColor: 'var(--bg-page)', border: '1.5px solid var(--border)', overflow: 'hidden' }}>
+                <img src={c.image || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=500&q=80'} alt={c.name} style={{ width: '100%', height: '140px', objectFit: 'cover' }} />
                 <div style={{ padding: '1rem' }}>
                   <h4 style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)', marginBottom: '0.25rem' }}>{c.name}</h4>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>{c.category} • {c.seats}</p>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>{c.category} • {c.seats} Seats</p>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: 800, color: 'var(--color-primary)' }}>{c.rate}</span>
-                    <span className="badge badge-neutral">Active Driver</span>
+                    <span style={{ fontWeight: 800, color: 'var(--color-primary)' }}>₹{c.basePrice} base</span>
+                    <span className="badge badge-accent">Active Fleet</span>
                   </div>
                 </div>
               </div>
@@ -627,9 +797,9 @@ export const AdminDashboard = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Headphones size={20} style={{ color: 'var(--color-primary)' }} />
-              Customer Support Ticket Queue
+              Customer Support Ticket Queue ({ticketsList.length})
             </h3>
-            <span className="badge badge-warning">{ticketsList.length} Open Queries</span>
+            <span className="badge badge-warning">Live Query Stream</span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
@@ -643,9 +813,9 @@ export const AdminDashboard = () => {
                   <button
                     onClick={() => handleTicketStatusChange(tkt.ticketId || tkt._id)}
                     className={`badge ${tkt.status === 'Resolved' ? 'badge-accent' : (tkt.status === 'In Progress' ? 'badge-warning' : 'badge-neutral')}`}
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', border: 'none' }}
                   >
-                    Status: {tkt.status || 'Received'} (Click to change)
+                    Status: {tkt.status || 'Received'} (Click to cycle) 🔄
                   </button>
                 </div>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-primary)', backgroundColor: 'var(--bg-surface)', padding: '0.65rem', borderRadius: '8px', border: '1px solid var(--border)', margin: '0.5rem 0' }}>
@@ -661,7 +831,85 @@ export const AdminDashboard = () => {
         </div>
       )}
 
-      {/* ADD EXPRESS TRAIN MODAL */}
+      {/* --- MODAL 1: ADD USER MODAL --- */}
+      {isAddUserOpen && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 2000,
+          backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem'
+        }}>
+          <div className="animate-scale-up" style={{
+            width: '100%', maxWidth: '440px', backgroundColor: 'var(--bg-surface)',
+            borderRadius: '20px', border: '1.5px solid var(--border-strong)',
+            padding: '1.75rem', boxShadow: 'var(--shadow-xl)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <UserPlus size={20} style={{ color: 'var(--color-primary)' }} /> Register Admin / User
+              </h3>
+              <button onClick={() => setIsAddUserOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddUserSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label className="form-label">Full Name *</label>
+                <input
+                  type="text"
+                  className="form-input no-icon"
+                  placeholder="e.g. Rahul Sharma"
+                  value={newUser.name}
+                  onChange={e => setNewUser({ ...newUser, name: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="form-label">Email Address *</label>
+                <input
+                  type="email"
+                  className="form-input no-icon"
+                  placeholder="user@globetrotter.travel"
+                  value={newUser.email}
+                  onChange={e => setNewUser({ ...newUser, email: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="form-label">Account Role</label>
+                <select
+                  className="form-input no-icon"
+                  value={newUser.role}
+                  onChange={e => setNewUser({ ...newUser, role: e.target.value })}
+                >
+                  <option value="Traveler">Traveler</option>
+                  <option value="Guide">Tour Guide</option>
+                  <option value="Admin">System Administrator</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="form-label">Password *</label>
+                <input
+                  type="password"
+                  className="form-input no-icon"
+                  value={newUser.password}
+                  onChange={e => setNewUser({ ...newUser, password: e.target.value })}
+                  required
+                />
+              </div>
+
+              <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem', width: '100%' }}>
+                Save User Account to MongoDB
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- MODAL 2: ADD EXPRESS TRAIN MODAL --- */}
       {isAddTrainOpen && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 2000,
@@ -689,8 +937,8 @@ export const AdminDashboard = () => {
                   type="text"
                   className="form-input no-icon"
                   placeholder="e.g. Shatabdi Express"
-                  value={newTrain.name}
-                  onChange={e => setNewTrain({ ...newTrain, name: e.target.value })}
+                  value={newTrain.trainName}
+                  onChange={e => setNewTrain({ ...newTrain, trainName: e.target.value })}
                   required
                 />
               </div>
@@ -701,8 +949,8 @@ export const AdminDashboard = () => {
                   type="text"
                   className="form-input no-icon"
                   placeholder="e.g. 12002 / SHATABDI"
-                  value={newTrain.number}
-                  onChange={e => setNewTrain({ ...newTrain, number: e.target.value })}
+                  value={newTrain.trainNumber}
+                  onChange={e => setNewTrain({ ...newTrain, trainNumber: e.target.value })}
                   required
                 />
               </div>
@@ -713,7 +961,6 @@ export const AdminDashboard = () => {
                   <input
                     type="text"
                     className="form-input no-icon"
-                    placeholder="NDLS"
                     value={newTrain.from}
                     onChange={e => setNewTrain({ ...newTrain, from: e.target.value })}
                   />
@@ -723,7 +970,6 @@ export const AdminDashboard = () => {
                   <input
                     type="text"
                     className="form-input no-icon"
-                    placeholder="BCT"
                     value={newTrain.to}
                     onChange={e => setNewTrain({ ...newTrain, to: e.target.value })}
                   />
@@ -741,7 +987,93 @@ export const AdminDashboard = () => {
               </div>
 
               <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem', width: '100%' }}>
-                Save Train to System
+                Save Train to Fleet
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- MODAL 3: ADD CAB VEHICLE MODAL --- */}
+      {isAddCabOpen && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 2000,
+          backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem'
+        }}>
+          <div className="animate-scale-up" style={{
+            width: '100%', maxWidth: '480px', backgroundColor: 'var(--bg-surface)',
+            borderRadius: '20px', border: '1.5px solid var(--border-strong)',
+            padding: '1.75rem', boxShadow: 'var(--shadow-xl)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Car size={20} style={{ color: 'var(--color-primary)' }} /> Add Cab Vehicle
+              </h3>
+              <button onClick={() => setIsAddCabOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddCabSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label className="form-label">Vehicle Name *</label>
+                <input
+                  type="text"
+                  className="form-input no-icon"
+                  placeholder="e.g. Maruti Dzire / Innova SUV"
+                  value={newCab.name}
+                  onChange={e => setNewCab({ ...newCab, name: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="form-label">Category</label>
+                <select
+                  className="form-input no-icon"
+                  value={newCab.category}
+                  onChange={e => setNewCab({ ...newCab, category: e.target.value })}
+                >
+                  <option value="Compact & Economical">Compact & Economical</option>
+                  <option value="Spacious SUV">Spacious SUV</option>
+                  <option value="VIP Chauffeur">VIP Chauffeur</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label className="form-label">Seats</label>
+                  <input
+                    type="number"
+                    className="form-input no-icon"
+                    value={newCab.seats}
+                    onChange={e => setNewCab({ ...newCab, seats: Number(e.target.value) })}
+                  />
+                </div>
+                <div>
+                  <label className="form-label">Base Price (₹)</label>
+                  <input
+                    type="number"
+                    className="form-input no-icon"
+                    value={newCab.basePrice}
+                    onChange={e => setNewCab({ ...newCab, basePrice: Number(e.target.value) })}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="form-label">Features (comma separated)</label>
+                <input
+                  type="text"
+                  className="form-input no-icon"
+                  value={newCab.features}
+                  onChange={e => setNewCab({ ...newCab, features: e.target.value })}
+                />
+              </div>
+
+              <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem', width: '100%' }}>
+                Save Cab to Fleet
               </button>
             </form>
           </div>
