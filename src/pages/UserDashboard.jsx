@@ -4,7 +4,7 @@ import { useTheme } from '../context/ThemeContext';
 import {
   MapPin, PlusCircle, Calendar, DollarSign, Share2, Compass,
   Sparkles, Luggage, Navigation, ArrowRight, Heart, Star,
-  Clock, CheckCircle, Search, Users, Shield, Briefcase, Plus, X,
+  Clock, CheckCircle, Search, Shield, Plus, X,
   Bookmark, Check, Sun, Moon, Plane, Tag
 } from 'lucide-react';
 import { MultiStopSearchWidget } from '../components/MultiStopSearchWidget';
@@ -194,53 +194,6 @@ const UserDashboard = () => {
     r.tag.toLowerCase().includes(searchFilter.toLowerCase())
   );
 
-  // Guide Dashboard View
-  if (currentUser?.role === 'Guide') {
-    return (
-      <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '2.5rem 1.5rem' }}>
-        <div className="glass-panel" style={{ padding: '2.25rem', marginBottom: '2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.4rem' }}>
-                <span className="badge badge-accent" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                  <Briefcase size={13} /> Certified Local Guide
-                </span>
-                <span className="badge badge-warning" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                  <Star size={13} /> 4.98 Rating
-                </span>
-              </div>
-              <h1 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                Guide Headquarters • Welcome, {currentUser?.name?.split(' ')[0]}
-              </h1>
-              <p style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-                Manage your scheduled tour groups, custom itineraries, and incoming client inquiries.
-              </p>
-            </div>
-            <button className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Plus size={18} />
-              Create Custom Tour
-            </button>
-          </div>
-        </div>
-
-        {/* Guide KPI Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', marginBottom: '2.5rem' }}>
-          {[
-            { label: 'Active Tours', value: '3 Ongoing', icon: <Navigation size={22} />, color: 'var(--color-primary)' },
-            { label: 'Booked Travelers', value: '28 Guests', icon: <Users size={22} />, color: 'var(--accent-text)' },
-            { label: 'Total Earnings', value: '$4,820', icon: <DollarSign size={22} />, color: 'var(--warning-text)' },
-            { label: 'Client Feedback', value: '99% Positive', icon: <Shield size={22} />, color: 'var(--color-primary-hover)' },
-          ].map((kpi) => (
-            <div key={kpi.label} className="glass-panel" style={{ padding: '1.5rem' }}>
-              <div style={{ color: kpi.color, marginBottom: '0.75rem' }}>{kpi.icon}</div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{kpi.label}</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '0.25rem' }}>{kpi.value}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   // Traveler Homepage View (GlobeTrotter Multi-Stop Experience with Theme Harmony)
   return (

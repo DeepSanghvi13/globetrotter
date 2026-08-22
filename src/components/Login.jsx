@@ -141,11 +141,10 @@ export const Login = () => {
             <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.65rem', textAlign: 'center' }}>
               ⚡ Fast Demo Credentials
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
               {[
                 { label: 'Admin', email: 'admin@globetrotter.travel', pass: 'adminpassword', icon: <ShieldCheck size={15} /> },
                 { label: 'Traveler', email: 'aarav.sharma@example.com', pass: 'password123', icon: <User size={15} /> },
-                { label: 'Guide', email: 'priya.guide@globetrotter.travel', pass: 'password123', icon: <Compass size={15} /> },
               ].map(d => (
                 <button key={d.label} type="button" onClick={() => setDemoAccount(d.email, d.pass)}
                   className="btn btn-outline btn-sm"

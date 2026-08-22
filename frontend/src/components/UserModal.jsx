@@ -96,7 +96,6 @@ export const UserModal = ({ isOpen, onClose, onSaveUser, editUser }) => {
               >
                 <option value="Traveler">Traveler</option>
                 <option value="Admin">Admin</option>
-                <option value="Guide">Guide</option>
               </select>
             </div>
 

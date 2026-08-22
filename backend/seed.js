@@ -18,7 +18,6 @@ const seedData = async () => {
     await User.deleteMany({});
     await User.insertMany([
       { name: 'Aarav Sharma', email: 'aarav.sharma@example.com', password: 'password123', role: 'Traveler' },
-      { name: 'Priya Iyer', email: 'priya.guide@globetrotter.travel', password: 'password123', role: 'Guide' },
       { name: 'Admin Master', email: 'admin@globetrotter.travel', password: 'adminpassword', role: 'Admin' }
     ]);
     console.log('✓ Seeded Users into MongoDB');

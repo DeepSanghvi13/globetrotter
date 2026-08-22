@@ -31,16 +31,6 @@ const CHAT_CONVERSATIONS = [
       { id: 'm-3', sender: 'user', text: 'Can I request a late check-in for Pullman Paris Tour Eiffel hotel?', timestamp: '10:32 AM' },
       { id: 'm-4', sender: 'admin', text: 'Absolutely! I have added a note to your voucher for late arrival. You are all set!', timestamp: '10:33 AM' }
     ]
-  },
-  {
-    chatId: 'chat-usr-2',
-    userName: 'Priya Iyer',
-    userEmail: 'priya.guide@globetrotter.travel',
-    unreadAdminCount: 0,
-    messages: [
-      { id: 'm-5', sender: 'user', text: 'Hello, need assistance regarding tour guide permit verification.', timestamp: '09:15 AM' },
-      { id: 'm-6', sender: 'admin', text: 'Hi Priya! Your guide license #GD-9812 has been verified by Admin. You are now active on the platform.', timestamp: '09:20 AM' }
-    ]
   }
 ];
 

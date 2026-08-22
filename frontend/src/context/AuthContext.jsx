@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
     } catch (networkError) {
       console.warn('Backend server unreachable, using offline fallback:', networkError.message);
       // Offline fallback ONLY when network fails completely
-      const role = email.includes('admin') ? 'Admin' : (email.includes('guide') ? 'Guide' : 'Traveler');
+      const role = email.includes('admin') ? 'Admin' : 'Traveler';
       const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       const fallbackUser = { name, email, role };
       setCurrentUser(fallbackUser);

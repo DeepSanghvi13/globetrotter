@@ -34,16 +34,6 @@ export const AdminDashboard = () => {
         { id: 'm-2', sender: 'admin', text: 'Hello Aarav! Welcome to GlobeTrotter Concierge. How can I assist you?', timestamp: '10:31 AM' },
         { id: 'm-3', sender: 'user', text: 'Can I request a late check-in for Pullman Paris Tour Eiffel hotel?', timestamp: '10:32 AM' }
       ]
-    },
-    {
-      chatId: 'chat-usr-2',
-      userName: 'Priya Iyer',
-      userEmail: 'priya.guide@globetrotter.travel',
-      unreadAdminCount: 0,
-      messages: [
-        { id: 'm-5', sender: 'user', text: 'Hello, need assistance regarding tour guide permit verification.', timestamp: '09:15 AM' },
-        { id: 'm-6', sender: 'admin', text: 'Hi Priya! Your guide license #GD-9812 has been verified by Admin. You are active.', timestamp: '09:20 AM' }
-      ]
     }
   ]);
   const [selectedChatId, setSelectedChatId] = useState('chat-usr-1');
@@ -146,7 +136,7 @@ export const AdminDashboard = () => {
 
   // 2. Toggle / Edit User Role
   const handleUserRoleChange = async (userId, currentRole) => {
-    const nextRole = currentRole === 'Traveler' ? 'Guide' : (currentRole === 'Guide' ? 'Admin' : 'Traveler');
+    const nextRole = currentRole === 'Traveler' ? 'Admin' : 'Traveler';
     setUsersList(prev => prev.map(u => (u._id === userId || u.id === userId) ? { ...u, role: nextRole } : u));
 
     try {
@@ -534,7 +524,6 @@ export const AdminDashboard = () => {
             >
               <option value="All">All Roles</option>
               <option value="Traveler">Travelers</option>
-              <option value="Guide">Guides</option>
               <option value="Admin">Admins</option>
             </select>
           )}
@@ -669,9 +658,9 @@ export const AdminDashboard = () => {
                         <td>
                           <button
                             onClick={() => handleUserRoleChange(uId, user.role || 'Traveler')}
-                            className={`badge ${user.role === 'Admin' ? 'badge-primary' : (user.role === 'Guide' ? 'badge-warning' : 'badge-neutral')}`}
+                            className={`badge ${user.role === 'Admin' ? 'badge-primary' : 'badge-neutral'}`}
                             style={{ cursor: 'pointer', border: 'none' }}
-                            title="Click to switch role: Traveler ➔ Guide ➔ Admin"
+                            title="Click to switch role: Traveler ➔ Admin"
                           >
                             {user.role || 'Traveler'} 🔄
                           </button>
@@ -1007,7 +996,6 @@ export const AdminDashboard = () => {
                   onChange={e => setNewUser({ ...newUser, role: e.target.value })}
                 >
                   <option value="Traveler">Traveler</option>
-                  <option value="Guide">Tour Guide</option>
                   <option value="Admin">System Administrator</option>
                 </select>
               </div>

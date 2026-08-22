@@ -155,7 +155,6 @@ const INITIAL_BOOKINGS = [
 
 const INITIAL_USERS = [
   { id: 'usr-1', name: 'Aarav Sharma', email: 'aarav.sharma@example.com', role: 'Traveler', createdAt: '2026-08-01' },
-  { id: 'usr-2', name: 'Priya Iyer', email: 'priya.guide@globetrotter.travel', role: 'Guide', createdAt: '2026-07-15' },
   { id: 'usr-3', name: 'Admin Master', email: 'admin@globetrotter.travel', role: 'Admin', createdAt: '2026-01-01' }
 ];
 
