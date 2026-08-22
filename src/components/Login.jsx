@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, User, Compass, AlertCircle } from 'lucide-react';
-import RiveAnimation from './RiveAnimation';
 
 export const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin@globetrotter.travel');
+  const [password, setPassword] = useState('adminpassword');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
@@ -32,9 +31,9 @@ export const Login = () => {
     }
   };
 
-  const setDemoAccount = (demoEmail) => {
+  const setDemoAccount = (demoEmail, demoPass = 'adminpassword') => {
     setEmail(demoEmail);
-    setPassword('password123');
+    setPassword(demoPass);
     setErrorMessage('');
   };
 
@@ -133,7 +132,7 @@ export const Login = () => {
 
             <button type="submit" className="btn btn-primary" disabled={isLoading}
               style={{ width: '100%', padding: '0.9rem', marginTop: '0.25rem', fontSize: '0.95rem' }}>
-              {isLoading ? 'Authenticating with MongoDB...' : <><span>Sign In to GlobeTrotter</span><ArrowRight size={17} /></>}
+              {isLoading ? 'Authenticating...' : <><span>Sign In to GlobeTrotter</span><ArrowRight size={17} /></>}
             </button>
           </form>
 
@@ -144,11 +143,11 @@ export const Login = () => {
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
               {[
-                { label: 'Admin', email: 'admin@globetrotter.travel', icon: <ShieldCheck size={15} /> },
-                { label: 'Traveler', email: 'aarav.sharma@example.com', icon: <User size={15} /> },
-                { label: 'Guide', email: 'priya.guide@globetrotter.travel', icon: <Compass size={15} /> },
+                { label: 'Admin', email: 'admin@globetrotter.travel', pass: 'adminpassword', icon: <ShieldCheck size={15} /> },
+                { label: 'Traveler', email: 'aarav.sharma@example.com', pass: 'password123', icon: <User size={15} /> },
+                { label: 'Guide', email: 'priya.guide@globetrotter.travel', pass: 'password123', icon: <Compass size={15} /> },
               ].map(d => (
-                <button key={d.label} type="button" onClick={() => setDemoAccount(d.email)}
+                <button key={d.label} type="button" onClick={() => setDemoAccount(d.email, d.pass)}
                   className="btn btn-outline btn-sm"
                   style={{ fontSize: '0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0.5rem 0.25rem', gap: '0.2rem' }}>
                   <span style={{ color: 'var(--color-primary)' }}>{d.icon}</span>
@@ -167,7 +166,7 @@ export const Login = () => {
           </p>
         </div>
 
-        {/* Right — Animation (50%) — no terracotta, uses page bg */}
+        {/* Right — Animation (50%) */}
         <div style={{
           flex: '0 0 50%',
           backgroundColor: 'var(--bg-page)',
@@ -178,8 +177,7 @@ export const Login = () => {
           padding: '2.5rem',
           gap: '1.5rem'
         }}>
-          <RiveAnimation src="/travel-animation.riv" width="100%" height="380px" />
-          <div style={{ textAlign: 'center', marginTop: '-1.5rem' }}>
+          <div style={{ textAlign: 'center' }}>
             <h2 style={{ fontFamily: '"Caveat", cursive', fontSize: '2.8rem', fontWeight: 700, marginBottom: '0', color: 'var(--text-primary)', letterSpacing: '0.02em', lineHeight: '1.2' }}>Plan Your Journey</h2>
             <p style={{ fontFamily: '"Caveat", cursive', color: 'var(--text-secondary)', fontSize: '1.5rem', fontWeight: 600, marginTop: '0', lineHeight: '1.3' }}>Multi-city trips, activities & budgets — all in one place.</p>
           </div>
@@ -189,5 +187,3 @@ export const Login = () => {
     </div>
   );
 };
-
-export default Login;

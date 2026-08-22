@@ -7,8 +7,8 @@ import RiveAnimation from './RiveAnimation';
 export const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin@globetrotter.travel');
+  const [password, setPassword] = useState('adminpassword');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
@@ -32,9 +32,9 @@ export const Login = () => {
     }
   };
 
-  const setDemoAccount = (demoEmail) => {
+  const setDemoAccount = (demoEmail, demoPass = 'adminpassword') => {
     setEmail(demoEmail);
-    setPassword('password123');
+    setPassword(demoPass);
     setErrorMessage('');
   };
 
@@ -144,11 +144,11 @@ export const Login = () => {
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
               {[
-                { label: 'Admin', email: 'admin@globetrotter.io', icon: <ShieldCheck size={15} /> },
-                { label: 'Traveler', email: 'sophia.chen@example.com', icon: <User size={15} /> },
-                { label: 'Guide', email: 'guide.mateo@example.com', icon: <Compass size={15} /> },
+                { label: 'Admin', email: 'admin@globetrotter.travel', pass: 'adminpassword', icon: <ShieldCheck size={15} /> },
+                { label: 'Traveler', email: 'aarav.sharma@example.com', pass: 'password123', icon: <User size={15} /> },
+                { label: 'Guide', email: 'priya.guide@globetrotter.travel', pass: 'password123', icon: <Compass size={15} /> },
               ].map(d => (
-                <button key={d.label} type="button" onClick={() => setDemoAccount(d.email)}
+                <button key={d.label} type="button" onClick={() => setDemoAccount(d.email, d.pass)}
                   className="btn btn-outline btn-sm"
                   style={{ fontSize: '0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0.5rem 0.25rem', gap: '0.2rem' }}>
                   <span style={{ color: 'var(--color-primary)' }}>{d.icon}</span>
@@ -167,7 +167,7 @@ export const Login = () => {
           </p>
         </div>
 
-        {/* Right — Animation (50%) — no terracotta, uses page bg */}
+        {/* Right — Animation (50%) */}
         <div style={{
           flex: '0 0 50%',
           backgroundColor: 'var(--bg-page)',

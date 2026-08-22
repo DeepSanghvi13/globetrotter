@@ -4,10 +4,12 @@ const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
+// Default Admin Master Profile
 const DEFAULT_DEMO_USER = {
-  name: 'Aarav Sharma',
-  email: 'aarav.sharma@example.com',
-  role: 'Traveler'
+  name: 'Admin Master',
+  email: 'admin@globetrotter.travel',
+  role: 'Admin',
+  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
 };
 
 const API_BASE_URL = 'http://localhost:5000/api/auth';
