@@ -6,7 +6,7 @@ import { QrCode, Scan, ShieldCheck, CheckCircle, Hotel } from 'lucide-react';
  */
 export const FlightBarcode = ({
   ticketNumber = 'ETKT 098-7712398412',
-  pnr = 'MMT-GT-94821',
+  pnr = 'GT-94821',
   passenger = 'AARAV SHARMA',
   flightNumber = 'AI-502',
   seat = '14A',

@@ -83,7 +83,7 @@ app.get('/', (req, res) => {
       <div style="background-color: ${dbStatus.isConnected ? '#DCFCE7' : '#FEF3C7'}; border: 1px solid ${dbStatus.isConnected ? '#86EFAC' : '#FDE68A'}; color: ${dbStatus.isConnected ? '#166534' : '#92400E'}; padding: 0.85rem 1.25rem; borderRadius: 10px; font-weight: 700; margin-bottom: 1.5rem;">
         Database Status: ${dbStatus.isConnected ? '🍃 MongoDB CONNECTED (' + dbStatus.host + ' / ' + dbStatus.name + ')' : '⚠️ MongoDB DISCONNECTED (Hybrid Fallback Store Active)'}
       </div>
-      <p>Official backend API server for MakeMyTrip Multi-Stop Flight, Train & Cab Booking Platform.</p>
+      <p>Official backend API server for GlobeTrotter Multi-Stop Flight, Train & Cab Booking Platform.</p>
       <ul>
         <li><strong>Database Status Check:</strong> <a href="/api/db-status">/api/db-status</a></li>
         <li><strong>Health Check:</strong> <a href="/api/health">/api/health</a></li>

@@ -3,7 +3,7 @@ import {
   Users, MapPin, DollarSign, Compass, Activity, Search, Filter,
   Plus, Edit, Trash2, ShieldAlert, CheckCircle, Clock, TrendingUp,
   BarChart3, PieChart, Star, ExternalLink, RefreshCw, Train, Car,
-  ShieldCheck, Database, Headphones, FileText, ChevronRight, X, AlertCircle, UserPlus, Check
+  ShieldCheck, Database, Headphones, FileText, ChevronRight, X, AlertCircle, UserPlus, Check, MessageSquare, Send
 } from 'lucide-react';
 import { BookingVoucherModal } from './BookingVoucherModal';
 
@@ -22,6 +22,33 @@ export const AdminDashboard = () => {
   const [dbStatus, setDbStatus] = useState('Connecting...');
   const [isLoading, setIsLoading] = useState(true);
 
+  // Live Chat Support State
+  const [chatThreads, setChatThreads] = useState([
+    {
+      chatId: 'chat-usr-1',
+      userName: 'Aarav Sharma',
+      userEmail: 'aarav.sharma@example.com',
+      unreadAdminCount: 1,
+      messages: [
+        { id: 'm-1', sender: 'user', text: 'Hi! I have a question regarding my multi-stop booking GT-94821.', timestamp: '10:30 AM' },
+        { id: 'm-2', sender: 'admin', text: 'Hello Aarav! Welcome to GlobeTrotter Concierge. How can I assist you?', timestamp: '10:31 AM' },
+        { id: 'm-3', sender: 'user', text: 'Can I request a late check-in for Pullman Paris Tour Eiffel hotel?', timestamp: '10:32 AM' }
+      ]
+    },
+    {
+      chatId: 'chat-usr-2',
+      userName: 'Priya Iyer',
+      userEmail: 'priya.guide@globetrotter.travel',
+      unreadAdminCount: 0,
+      messages: [
+        { id: 'm-5', sender: 'user', text: 'Hello, need assistance regarding tour guide permit verification.', timestamp: '09:15 AM' },
+        { id: 'm-6', sender: 'admin', text: 'Hi Priya! Your guide license #GD-9812 has been verified by Admin. You are active.', timestamp: '09:20 AM' }
+      ]
+    }
+  ]);
+  const [selectedChatId, setSelectedChatId] = useState('chat-usr-1');
+  const [adminReplyText, setAdminReplyText] = useState('');
+
   // Selected Booking Voucher Modal State
   const [selectedVoucherBooking, setSelectedVoucherBooking] = useState(null);
 
@@ -39,7 +66,7 @@ export const AdminDashboard = () => {
   const fetchAdminData = async () => {
     setIsLoading(true);
     try {
-      const [resStatus, resStats, resUsers, resBookings, resTrains, resCabs, resTickets] = await Promise.all([
+      const [resStatus, resStats, resUsers, resBookings, resTrains, resCabs, resTickets, resChats] = await Promise.all([
         fetch('http://localhost:5000/api/db-status').then(r => r.json()).catch(() => null),
         fetch('http://localhost:5000/api/admin/stats').then(r => r.json()).catch(() => null),
         fetch('http://localhost:5000/api/admin/users').then(r => r.json()).catch(() => null),
@@ -47,6 +74,7 @@ export const AdminDashboard = () => {
         fetch('http://localhost:5000/api/trains/search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) }).then(r => r.json()).catch(() => null),
         fetch('http://localhost:5000/api/cabs/search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) }).then(r => r.json()).catch(() => null),
         fetch('http://localhost:5000/api/support/tickets').then(r => r.json()).catch(() => null),
+        fetch('http://localhost:5000/api/support/chat').then(r => r.json()).catch(() => null)
       ]);
 
       if (resStatus && resStatus.connected) {
@@ -61,6 +89,7 @@ export const AdminDashboard = () => {
       if (resTrains?.trains) setTrainsList(resTrains.trains);
       if (resCabs?.availableCabs) setCabsList(resCabs.availableCabs);
       if (resTickets?.tickets) setTicketsList(resTickets.tickets);
+      if (resChats?.conversations) setChatThreads(resChats.conversations);
     } catch (err) {
       console.warn('Admin API fetch warning:', err);
     } finally {
@@ -104,7 +133,6 @@ export const AdminDashboard = () => {
         setUsersList(prev => [data.user, ...prev]);
         alert(`User "${data.user.name}" created successfully!`);
       } else {
-        // Fallback
         const created = { id: `usr-${Date.now()}`, ...newUser };
         setUsersList(prev => [created, ...prev]);
       }
@@ -127,9 +155,7 @@ export const AdminDashboard = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ role: nextRole })
       });
-    } catch (e) {
-      // client updated
-    }
+    } catch (e) {}
   };
 
   // 3. Delete User
@@ -139,9 +165,7 @@ export const AdminDashboard = () => {
 
     try {
       await fetch(`http://localhost:5000/api/admin/users/${userId}`, { method: 'DELETE' });
-    } catch (e) {
-      // client updated
-    }
+    } catch (e) {}
   };
 
   // 4. Update Booking Status
@@ -155,9 +179,7 @@ export const AdminDashboard = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: nextStatus })
       });
-    } catch (e) {
-      // client updated
-    }
+    } catch (e) {}
   };
 
   // 5. Delete Booking
@@ -230,6 +252,46 @@ export const AdminDashboard = () => {
       return t;
     }));
   };
+
+  // 9. Admin Direct Chat Reply Handler
+  const handleAdminSendReply = async (e) => {
+    e.preventDefault();
+    if (!adminReplyText.trim() || !selectedChatId) return;
+
+    const replyMsg = {
+      id: `m-${Date.now()}`,
+      sender: 'admin',
+      text: adminReplyText,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    setChatThreads(prev => prev.map(c => {
+      if (c.chatId === selectedChatId) {
+        return {
+          ...c,
+          unreadAdminCount: 0,
+          messages: [...(c.messages || []), replyMsg]
+        };
+      }
+      return c;
+    }));
+
+    try {
+      await fetch('http://localhost:5000/api/support/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chatId: selectedChatId,
+          sender: 'admin',
+          text: adminReplyText,
+          userName: 'Admin Concierge'
+        })
+      });
+    } catch (err) {}
+    setAdminReplyText('');
+  };
+
+  const activeThread = chatThreads.find(c => c.chatId === selectedChatId) || chatThreads[0];
 
   return (
     <div className="main-content animate-fade-in" style={{ paddingBottom: '4rem' }}>
@@ -313,7 +375,7 @@ export const AdminDashboard = () => {
             { id: 'bookings', label: 'Bookings Vault', icon: <Compass size={17} />, count: bookingsList.length },
             { id: 'trains', label: 'Train Operations', icon: <Train size={17} />, count: trainsList.length },
             { id: 'cabs', label: 'Cab Fleets', icon: <Car size={17} />, count: cabsList.length },
-            { id: 'tickets', label: 'Support Queue', icon: <Headphones size={17} />, count: ticketsList.length },
+            { id: 'tickets', label: 'Support Queue & Live Chat', icon: <Headphones size={17} />, count: ticketsList.length + chatThreads.length },
           ].map(tab => (
             <button
               key={tab.id}
@@ -791,43 +853,103 @@ export const AdminDashboard = () => {
         </div>
       )}
 
-      {/* ---------------- TAB 6: SUPPORT QUEUE ---------------- */}
+      {/* ---------------- TAB 6: SUPPORT QUEUE & LIVE CHAT CONSOLE ---------------- */}
       {activeTab === 'tickets' && (
-        <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Headphones size={20} style={{ color: 'var(--color-primary)' }} />
-              Customer Support Ticket Queue ({ticketsList.length})
+        <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '1.5rem' }}>
+          
+          {/* Left Column: Traveler Live Chat Threads */}
+          <div className="card" style={{ padding: '1.25rem', height: '620px', display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <MessageSquare size={18} style={{ color: 'var(--color-primary)' }} /> Live Traveler Chats
             </h3>
-            <span className="badge badge-warning">Live Query Stream</span>
+
+            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+              {chatThreads.map(ct => {
+                const isSel = ct.chatId === selectedChatId;
+                const lastMsg = ct.messages?.[ct.messages.length - 1];
+                return (
+                  <div
+                    key={ct.chatId}
+                    onClick={() => setSelectedChatId(ct.chatId)}
+                    style={{
+                      padding: '0.85rem',
+                      borderRadius: '12px',
+                      backgroundColor: isSel ? 'var(--color-primary)' : 'var(--bg-page)',
+                      color: isSel ? '#FFFFFF' : 'var(--text-primary)',
+                      border: '1px solid',
+                      borderColor: isSel ? 'var(--color-primary)' : 'var(--border)',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+                      <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>{ct.userName}</span>
+                      <span style={{ fontSize: '0.7rem', opacity: isSel ? 0.9 : 0.6 }}>{lastMsg?.timestamp || '10:30 AM'}</span>
+                    </div>
+                    <div style={{ fontSize: '0.75rem', opacity: isSel ? 0.9 : 0.7, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                      {lastMsg?.text || 'No messages yet'}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            {ticketsList.map(tkt => (
-              <div key={tkt.ticketId || tkt._id} style={{ padding: '1rem', borderRadius: '14px', backgroundColor: 'var(--bg-page)', border: '1.5px solid var(--border)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                  <div>
-                    <span style={{ fontFamily: 'monospace', fontWeight: 800, color: 'var(--color-primary)', fontSize: '0.85rem' }}>{tkt.ticketId}</span>
-                    <h4 style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text-primary)', margin: '2px 0 0 0' }}>{tkt.name} ({tkt.email})</h4>
-                  </div>
-                  <button
-                    onClick={() => handleTicketStatusChange(tkt.ticketId || tkt._id)}
-                    className={`badge ${tkt.status === 'Resolved' ? 'badge-accent' : (tkt.status === 'In Progress' ? 'badge-warning' : 'badge-neutral')}`}
-                    style={{ cursor: 'pointer', border: 'none' }}
-                  >
-                    Status: {tkt.status || 'Received'} (Click to cycle) 🔄
-                  </button>
-                </div>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-primary)', backgroundColor: 'var(--bg-surface)', padding: '0.65rem', borderRadius: '8px', border: '1px solid var(--border)', margin: '0.5rem 0' }}>
-                  "{tkt.message}"
-                </p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                  <span>Category: {tkt.category || 'General'}</span>
-                  <span>Priority: <strong style={{ color: tkt.priority === 'High' ? '#EF4444' : 'var(--text-primary)' }}>{tkt.priority || 'Normal'}</strong></span>
+          {/* Right Column: Live Chat Messenger & Reply Panel */}
+          <div className="card" style={{ padding: '1.25rem', height: '620px', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: '0.85rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
+                  Chat with {activeThread?.userName || 'Traveler'}
+                </h3>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                  Email: {activeThread?.userEmail || 'traveler@example.com'} • Direct Concierge Support
                 </div>
               </div>
-            ))}
+              <span className="badge badge-accent">Live Admin Agent Active</span>
+            </div>
+
+            {/* Chat Thread Messages */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.85rem', backgroundColor: 'var(--bg-page)', borderRadius: '12px', marginBottom: '1rem', border: '1px solid var(--border)' }}>
+              {(activeThread?.messages || []).map((m, mIdx) => {
+                const isAdminMsg = m.sender === 'admin';
+                return (
+                  <div key={m.id || mIdx} style={{ display: 'flex', flexDirection: 'column', alignItems: isAdminMsg ? 'flex-end' : 'flex-start' }}>
+                    <div style={{
+                      maxWidth: '75%',
+                      padding: '0.75rem 1rem',
+                      borderRadius: isAdminMsg ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+                      backgroundColor: isAdminMsg ? 'var(--color-primary)' : 'var(--bg-surface)',
+                      color: isAdminMsg ? '#FFFFFF' : 'var(--text-primary)',
+                      border: isAdminMsg ? 'none' : '1px solid var(--border)',
+                      fontSize: '0.875rem'
+                    }}>
+                      {m.text}
+                    </div>
+                    <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+                      {m.sender === 'admin' ? 'Admin Agent' : activeThread?.userName} • {m.timestamp}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Admin Reply Form */}
+            <form onSubmit={handleAdminSendReply} style={{ display: 'flex', gap: '0.65rem' }}>
+              <input
+                type="text"
+                className="form-input no-icon"
+                placeholder="Type your official admin concierge reply..."
+                value={adminReplyText}
+                onChange={e => setAdminReplyText(e.target.value)}
+                style={{ flex: 1, fontSize: '0.9rem' }}
+              />
+              <button type="submit" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Send size={16} /> Send Reply
+              </button>
+            </form>
           </div>
+
         </div>
       )}
 

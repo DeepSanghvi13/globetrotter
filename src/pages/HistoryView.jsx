@@ -12,7 +12,7 @@ import { CURRENCIES, POPULAR_CITIES } from '../data/multiStopData';
 const INITIAL_TRIP_HISTORY = [
   {
     id: 'hist-1',
-    pnr: 'MMT-GT-94821',
+    pnr: 'GT-94821',
     title: 'Delhi ➔ Dubai ➔ Paris ➔ Rome Multi-City Grand Tour',
     status: 'Confirmed E-Ticket',
     createdAt: 'Aug 21, 2026',
@@ -88,7 +88,7 @@ const INITIAL_TRIP_HISTORY = [
   },
   {
     id: 'hist-2',
-    pnr: 'MMT-GT-71044',
+    pnr: 'GT-71044',
     title: 'Bengaluru ➔ Singapore ➔ Kuala Lumpur Multi-Stop',
     status: 'Confirmed E-Ticket',
     createdAt: 'Aug 14, 2026',
@@ -145,7 +145,7 @@ const INITIAL_TRIP_HISTORY = [
   },
   {
     id: 'hist-3',
-    pnr: 'MMT-GT-38491',
+    pnr: 'GT-38491',
     title: 'Delhi ➔ Jaipur ➔ Udaipur Royal Heritage Circuit',
     status: 'Completed',
     createdAt: 'Jul 10, 2026',

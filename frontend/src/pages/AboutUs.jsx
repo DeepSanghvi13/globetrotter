@@ -19,7 +19,7 @@ export const AboutUs = () => {
   const CORE_VALUES = [
     {
       icon: <Sparkles size={26} />,
-      title: 'MakeMyTrip-Grade Multi-Stop Power',
+      title: 'GlobeTrotter Multi-Stop Power',
       desc: 'Connect 2 to 6+ cities into a singular, cohesive itinerary with smart layover calculations and automated bundle savings.'
     },
     {
@@ -97,7 +97,7 @@ export const AboutUs = () => {
             </p>
 
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: 1.65, maxWidth: '720px' }}>
-              GlobeTrotter was founded to eliminate the friction of planning complex multi-destination trips. We unite flight routing, luxury stopover stays, curated experiences, and scannable boarding passes into one intuitive, MakeMyTrip-grade platform.
+              GlobeTrotter was founded to eliminate the friction of planning complex multi-destination trips. We unite flight routing, luxury stopover stays, curated experiences, and scannable boarding passes into one intuitive, premium platform.
             </p>
           </div>
         </div>
@@ -182,7 +182,7 @@ export const AboutUs = () => {
           <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
             <span className="badge badge-warning" style={{ marginBottom: '0.4rem' }}>How It Works</span>
             <h2 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-              The 4-Step MakeMyTrip Multi-Stop Experience
+              The 4-Step GlobeTrotter Multi-Stop Experience
             </h2>
           </div>
 

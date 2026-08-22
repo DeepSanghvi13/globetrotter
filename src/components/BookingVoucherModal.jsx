@@ -120,7 +120,7 @@ export const BookingVoucherModal = ({
               textAlign: 'right'
             }}>
               <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.85 }}>Booking Ref / PNR</div>
-              <div style={{ fontSize: '1.35rem', fontWeight: 800, letterSpacing: '0.1em', fontFamily: 'monospace' }}>{pnr || 'MMT-GT-94821'}</div>
+              <div style={{ fontSize: '1.35rem', fontWeight: 800, letterSpacing: '0.1em', fontFamily: 'monospace' }}>{pnr || 'GT-94821'}</div>
             </div>
           </div>
         </div>
@@ -318,7 +318,7 @@ export const BookingVoucherModal = ({
                       {/* 1D Flight Barcode Graphic */}
                       <FlightBarcode
                         ticketNumber={ticketNum}
-                        pnr={pnr || 'MMT-GT-94821'}
+                        pnr={pnr || 'GT-94821'}
                         passenger={passengerName.toUpperCase()}
                         flightNumber={flightNum}
                         seat={seat}

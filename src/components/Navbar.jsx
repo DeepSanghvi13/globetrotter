@@ -132,10 +132,9 @@ export const Navbar = () => {
         {/* RIGHT SIDE: User Profile Badge with Image Avatar + Theme Switcher */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           
-          {/* User Name & Profile Image Pill */}
+          {/* User Name & Profile Image Pill (Non-clickable badge) */}
           {currentUser ? (
             <div
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -145,11 +144,9 @@ export const Navbar = () => {
                 padding: '0.35rem 0.85rem 0.35rem 0.35rem',
                 borderRadius: '999px',
                 border: '1px solid var(--border-strong)',
-                cursor: 'pointer',
-                transition: 'border-color 0.2s ease'
+                cursor: 'default',
+                userSelect: 'none'
               }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--color-primary)'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-strong)'}
             >
               {/* Profile Image Avatar */}
               <img

@@ -22,7 +22,7 @@ export const MultiStopPackages = ({
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
             <span className="badge badge-accent" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-              <Award size={13} /> MakeMyTrip Signature Holidays
+              <Award size={13} /> GlobeTrotter Signature Holidays
             </span>
             <span className="badge badge-warning" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
               <Tag size={13} /> Multi-Stop Bundle Savings

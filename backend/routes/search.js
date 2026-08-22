@@ -25,7 +25,7 @@ router.get('/packages', (req, res) => {
   res.json({ packages: PACKAGES });
 });
 
-// POST /api/search/multi-stop — MakeMyTrip Multi-Stop Optimizer Calculation Engine
+// POST /api/search/multi-stop — GlobeTrotter Multi-Stop Optimizer Calculation Engine
 router.post('/multi-stop', (req, res) => {
   const { stops = [], travelers = { adults: 1, children: 0 }, specialFare = 'regular', currency = 'INR' } = req.body;
 

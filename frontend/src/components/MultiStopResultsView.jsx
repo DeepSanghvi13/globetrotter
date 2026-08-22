@@ -190,7 +190,7 @@ export const MultiStopResultsView = ({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
           <div>
             <span className="badge badge-accent" style={{ marginBottom: '0.35rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-              <Award size={13} /> MakeMyTrip Multi-Stop Route Optimizer Active
+              <Award size={13} /> GlobeTrotter Multi-Stop Route Optimizer Active
             </span>
             <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
               {stops[0]?.fromCity?.name} ➔ {stops.map(s => s.toCity?.name).join(' ➔ ')}
@@ -878,7 +878,7 @@ export const MultiStopResultsView = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.5rem' }}>
               <ShieldCheck size={18} style={{ color: 'var(--color-primary)' }} />
               <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                GlobeTrotter & MMT Assurance
+                GlobeTrotter Booking Assurance
               </span>
             </div>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: 1.4, margin: 0 }}>

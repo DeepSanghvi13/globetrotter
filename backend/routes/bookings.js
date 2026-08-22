@@ -53,7 +53,7 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Trip stops are required for booking creation.' });
   }
 
-  const pnr = `MMT-GT-${Math.floor(10000 + Math.random() * 90000)}`;
+  const pnr = `GT-${Math.floor(10000 + Math.random() * 90000)}`;
   const title = `${stops[0]?.fromCity?.name || 'City'} ➔ ${stops.map(s => s.toCity?.name || 'Stop').join(' ➔ ')} Multi-City Tour`;
 
   const newBookingPayload = {

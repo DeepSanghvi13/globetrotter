@@ -265,12 +265,12 @@ const UserDashboard = () => {
                   {isDark ? (
                     <>
                       <Moon size={14} style={{ color: '#4ADE80' }} />
-                      <span>Moonlit Night Engine • MakeMyTrip Multi-Stop Active</span>
+                      <span>Moonlit Night Engine • GlobeTrotter Multi-Stop Active</span>
                     </>
                   ) : (
                     <>
                       <Sun size={14} style={{ color: '#166534' }} />
-                      <span>Golden Hour Sunset • MakeMyTrip Multi-Stop Active</span>
+                      <span>Golden Hour Sunset • GlobeTrotter Multi-Stop Active</span>
                     </>
                   )}
                 </span>
@@ -301,7 +301,7 @@ const UserDashboard = () => {
               <p className="handwritten-tag" style={{ margin: '0.2rem 0 0.85rem 0' }}>
                 {isDark
                   ? '“From the canals of Venice to the neon lights of Tokyo, connect your dream stops in one seamless booking.”'
-                  : '“Hop across continents, add layovers, and bundle flights, stays & sightseeing with MakeMyTrip multi-stop ease.”'
+                  : '“Hop across continents, add layovers, and bundle flights, stays & sightseeing with GlobeTrotter multi-stop ease.”'
                 }
               </p>
 

@@ -136,7 +136,7 @@ function AppLayout() {
               </div>
               <div>
                 <span style={{ fontWeight: 800, color: 'var(--text-primary)' }}>GlobeTrotter</span>
-                <span style={{ marginLeft: '0.35rem' }}>— MakeMyTrip-Powered Multi-Stop Travel Engine</span>
+                <span style={{ marginLeft: '0.35rem' }}>— Multi-Stop Travel Engine</span>
               </div>
             </div>
 

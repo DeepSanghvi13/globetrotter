@@ -217,7 +217,7 @@ export const ContactUs = () => {
                       value={formData.pnr}
                       onChange={(e) => setFormData({ ...formData, pnr: e.target.value.toUpperCase() })}
                       className="form-input no-icon"
-                      placeholder="e.g. MMT-GT-94821"
+                      placeholder="e.g. GT-94821"
                     />
                   </div>
 
@@ -306,7 +306,7 @@ export const ContactUs = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.65rem' }}>
                 <ShieldCheck size={22} style={{ color: 'var(--accent-text)' }} />
                 <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
-                  MakeMyTrip Support Promise
+                  GlobeTrotter Support Promise
                 </h4>
               </div>
               <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>

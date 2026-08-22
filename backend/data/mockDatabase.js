@@ -80,7 +80,7 @@ const PACKAGES = [
 const INITIAL_BOOKINGS = [
   {
     id: 'bk-94821',
-    pnr: 'MMT-GT-94821',
+    pnr: 'GT-94821',
     title: 'Delhi ➔ Dubai ➔ Paris ➔ Rome Multi-City Grand Tour',
     status: 'Confirmed E-Ticket',
     createdAt: 'Aug 21, 2026',

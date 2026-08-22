@@ -32,7 +32,7 @@ Stores multi-city travel itineraries, flight & hotel reservations, and scannable
 
 Fields:
 - pnr (String): Required, Unique
-  Scannable 1D barcode & QR ticket code (Format: MMT-GT-XXXXX).
+  Scannable 1D barcode & QR ticket code (Format: GT-XXXXX).
 - title (String): Required
   Trip route summary (e.g. "New Delhi ➔ Jaipur ➔ Udaipur Multi-City Tour").
 - status (String): Default: 'Confirmed E-Ticket'

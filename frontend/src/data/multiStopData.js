@@ -37,7 +37,7 @@ export const SPECIAL_FARES = [
 ];
 
 export const PROMO_COUPONS = [
-  { code: 'MMTHACKATHON', discountPercent: 15, maxDiscount: 4500, desc: '15% Off on Multi-City Bookings (up to ₹4,500)' },
+  { code: 'GTHACKATHON', discountPercent: 15, maxDiscount: 4500, desc: '15% Off on Multi-City Bookings (up to ₹4,500)' },
   { code: 'GLOBETROTTER', discountFlat: 2500, desc: 'Flat ₹2,500 Off on 3+ Stop International Tours' },
   { code: 'ODODEAL', discountPercent: 10, maxDiscount: 3000, desc: '10% Instant Discount for Hackathon Members' }
 ];
