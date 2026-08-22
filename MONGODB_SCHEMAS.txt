@@ -1,0 +1,141 @@
+===============================================================================
+                       GLOBETROTTER PRO — MONGO DB SCHEMAS DOCUMENTATION
+===============================================================================
+
+Database Engine: MongoDB (Mongoose ORM v8.x)
+Database Name: globetrotter
+Default Connection URI: mongodb://127.0.0.1:27017/globetrotter
+Last Updated: 2026-08-22
+
+-------------------------------------------------------------------------------
+1. USER SCHEMA (File: backend/models/User.js)
+-------------------------------------------------------------------------------
+Stores user authentication profiles, account roles, and credentials.
+
+Fields:
+- name (String): Required
+  Full name of the user.
+- email (String): Required, Unique, Matches Email Regex
+  Email address used as primary account identifier.
+- password (String): Required, Minimum length: 6 characters
+  Hashed / plain account password.
+- role (String): Enum ['Traveler', 'Guide', 'Admin'], Default: 'Traveler'
+  User permission level.
+- createdAt (Date): Default: Date.now
+  Account registration timestamp.
+
+
+-------------------------------------------------------------------------------
+2. BOOKING SCHEMA (File: backend/models/Booking.js)
+-------------------------------------------------------------------------------
+Stores multi-city travel itineraries, flight & hotel reservations, and scannable PNR tickets.
+
+Fields:
+- pnr (String): Required, Unique
+  Scannable 1D barcode & QR ticket code (Format: MMT-GT-XXXXX).
+- title (String): Required
+  Trip route summary (e.g. "New Delhi ➔ Jaipur ➔ Udaipur Multi-City Tour").
+- status (String): Default: 'Confirmed E-Ticket'
+  Booking status tag ('Confirmed E-Ticket', 'Cancelled & Refunded').
+- departureDate (String): Default: '2026-09-15'
+  Journey start date.
+- travelers (Object): Default: { adults: 1, children: 0, cabinClass: 'Economy' }
+  Passenger headcount and cabin preference.
+- primaryPassenger (String): Default: 'Aarav Sharma'
+  Lead passenger name on the voucher.
+- totalPrice (Number): Required
+  Total calculated booking price in currency units.
+- currency (String): Default: 'INR'
+  ISO currency code ('INR', 'USD', 'EUR').
+- stops (Array of Objects): Mixed
+  Array containing multi-city legs (fromCity, toCity, flight, train, cab details).
+- selectedHotels (Object): Mixed
+  Map of stopover hotel reservations per city.
+- selectedActivities (Array of Objects): Mixed
+  Curated sightseeing passes and tour tickets.
+- createdAt (Date): Default: Date.now
+  Booking creation timestamp.
+
+
+-------------------------------------------------------------------------------
+3. TRAIN SCHEMA (File: backend/models/Train.js)
+-------------------------------------------------------------------------------
+Stores express train connections, IRCTC seat classes, and speeds.
+
+Fields:
+- trainName (String): Required
+  Train express name (e.g. "Vande Bharat Express", "Eurostar International").
+- trainNumber (String): Required
+  Train code (e.g. "20977 / VB-EXPRESS").
+- from (Mixed Object):
+  Origin station object { code: 'NDLS', name: 'New Delhi Central' }.
+- to (Mixed Object):
+  Destination station object { code: 'JP', name: 'Jaipur Junction' }.
+- depTime (String):
+  Departure time (e.g. "06:00 AM").
+- arrTime (String):
+  Arrival time (e.g. "10:45 AM").
+- duration (String):
+  Total travel duration (e.g. "4h 45m").
+- speed (String):
+  Train speed rating (e.g. "High Speed 160 km/h").
+- classes (Array of Mixed Objects):
+  Class availability array [{ type: 'AC Chair Car', fare: 1450, status: 'AVAILABLE' }].
+- rating (Number):
+  Passenger rating score (e.g. 4.9).
+- punctuality (String):
+  On-time reliability rating (e.g. "99.4% On Time").
+
+
+-------------------------------------------------------------------------------
+4. CAB SCHEMA (File: backend/models/Cab.js)
+-------------------------------------------------------------------------------
+Stores chauffeur fleet inventory, seating capacities, and flat rate fares.
+
+Fields:
+- name (String): Required
+  Vehicle model name (e.g. "Outstation SUV (Innova Crysta)").
+- category (String):
+  Fleet class ("Compact & Economical", "Spacious SUV", "Executive VIP").
+- seats (Number):
+  Passenger seating capacity (e.g. 4, 6).
+- bags (String):
+  Luggage allowance (e.g. "4 Large Bags").
+- basePrice (Number):
+  Flat fare rate estimate in INR.
+- rating (Number):
+  Driver and vehicle rating (e.g. 4.92).
+- image (String):
+  Vehicle thumbnail image URL.
+- features (Array of Strings):
+  Included vehicle amenities (["AC", "GPS Tracking", "Tolls Included"]).
+
+
+-------------------------------------------------------------------------------
+5. SUPPORT TICKET SCHEMA (File: backend/models/SupportTicket.js)
+-------------------------------------------------------------------------------
+Stores customer support queries, priority tags, and resolution status.
+
+Fields:
+- ticketId (String): Required, Unique
+  Customer support reference ID (Format: TKT-XXXXX).
+- name (String): Required
+  Traveler name submitting query.
+- email (String): Required
+  Contact email address.
+- pnr (String): Optional
+  Related booking PNR code.
+- category (String): Default: 'General'
+  Query topic ('General', 'Cancellation', 'Baggage', 'Payment').
+- priority (String): Default: 'Normal'
+  Ticket priority level ('Normal', 'High', 'Urgent').
+- message (String): Required
+  Customer question or complaint message.
+- status (String): Default: 'Received'
+  Support ticket status ('Received', 'In Progress', 'Resolved').
+- createdAt (Date): Default: Date.now
+  Ticket creation timestamp.
+
+===============================================================================
+                             END OF DOCUMENTATION
+===============================================================================
