@@ -177,261 +177,252 @@ export const TrainBookingView = ({ currency = 'INR' }) => {
   };
 
   return (
-    <div className="traveler-homepage-container" style={{ padding: '0.75rem 1.5rem 2.5rem 1.5rem', minHeight: 'calc(100vh - 120px)' }}>
-      <div style={{ maxWidth: '1240px', margin: '0 auto' }}>
+    <div style={{ marginTop: '1rem', marginBottom: '2.5rem' }}>
+      
+      {/* Standalone Train Search Widget - Clean & Tightly Aligned */}
+      <div className="glass-panel" style={{
+        padding: '1.5rem',
+        borderRadius: 'var(--radius-xl)',
+        border: '1.5px solid var(--border-strong)',
+        boxShadow: 'var(--shadow-lg)',
+        marginBottom: '2rem'
+      }}>
         
-        {/* Header Hero Banner */}
-        <div className="traveler-hero-banner" style={{ padding: '2rem 2.25rem', marginBottom: '1.5rem' }}>
-          <div className="hero-glow-ambient" />
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
-              <span className="badge badge-accent" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                <Train size={14} /> Official IRCTC & High-Speed Rail Partner
-              </span>
-              <span className="badge badge-warning" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                <ShieldCheck size={14} /> 100% Guaranteed Seat & Instant PNR
-              </span>
-            </div>
-
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.2rem 0' }}>
-              High-Speed Express & Bullet Train Bookings 🚆
-            </h1>
-            <p className="handwritten-tag" style={{ margin: '0.2rem 0 0.5rem 0', fontSize: '1.5rem' }}>
-              “Vande Bharat, Eurostar, and Express Trains — seamless rail journeys nationwide.”
-            </p>
+        {/* Section Header Badge */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <span className="badge badge-accent" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.35rem 0.85rem' }}>
+              <Train size={14} /> High-Speed Express & IRCTC Trains
+            </span>
+            <span className="badge badge-warning" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+              <ShieldCheck size={14} /> Instant PNR Confirmation
+            </span>
           </div>
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            Vande Bharat • Eurostar • Rajdhani
+          </span>
         </div>
 
-        {/* Dedicated Standalone Train Search Widget */}
-        <div className="glass-panel" style={{
-          padding: '1.5rem',
-          borderRadius: 'var(--radius-xl)',
-          border: '1px solid var(--border-strong)',
-          boxShadow: 'var(--shadow-lg)',
-          marginBottom: '2rem'
-        }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr 180px 180px auto', gap: '1rem', alignItems: 'center' }}>
-            
-            {/* From Station */}
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>From Station</label>
-              <select
-                value={fromStation}
-                onChange={(e) => setFromStation(e.target.value)}
-                className="form-input no-icon"
-                style={{ fontWeight: 700, fontSize: '0.95rem' }}
-              >
-                {POPULAR_STATIONS.map((st) => (
-                  <option key={st.code} value={st.code}>
-                    {st.flag} {st.name} ({st.code})
-                  </option>
-                ))}
-              </select>
-            </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr 180px 180px auto', gap: '1rem', alignItems: 'center' }}>
+          
+          {/* From Station */}
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>From Station</label>
+            <select
+              value={fromStation}
+              onChange={(e) => setFromStation(e.target.value)}
+              className="form-input no-icon"
+              style={{ fontWeight: 700, fontSize: '0.95rem' }}
+            >
+              {POPULAR_STATIONS.map((st) => (
+                <option key={st.code} value={st.code}>
+                  {st.flag} {st.name} ({st.code})
+                </option>
+              ))}
+            </select>
+          </div>
 
-            {/* Swap Button */}
+          {/* Swap Button */}
+          <button
+            type="button"
+            onClick={handleSwapStations}
+            style={{
+              background: 'none',
+              border: '1px solid var(--border)',
+              borderRadius: '50%',
+              width: '36px',
+              height: '36px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: 'var(--color-primary)',
+              backgroundColor: 'var(--bg-surface)',
+              marginTop: '1.25rem'
+            }}
+          >
+            <ArrowRightLeft size={16} />
+          </button>
+
+          {/* To Station */}
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>To Station</label>
+            <select
+              value={toStation}
+              onChange={(e) => setToStation(e.target.value)}
+              className="form-input no-icon"
+              style={{ fontWeight: 700, fontSize: '0.95rem' }}
+            >
+              {POPULAR_STATIONS.map((st) => (
+                <option key={st.code} value={st.code}>
+                  {st.flag} {st.name} ({st.code})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Travel Date */}
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Travel Date</label>
+            <input
+              type="date"
+              value={travelDate}
+              onChange={(e) => setTravelDate(e.target.value)}
+              className="form-input no-icon"
+              style={{ fontWeight: 600, fontSize: '0.875rem' }}
+            />
+          </div>
+
+          {/* Quota */}
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Quota</label>
+            <select
+              value={quota}
+              onChange={(e) => setQuota(e.target.value)}
+              className="form-input no-icon"
+              style={{ fontWeight: 600, fontSize: '0.875rem' }}
+            >
+              <option value="GENERAL">General Quota</option>
+              <option value="TATKAL">Tatkal Priority</option>
+              <option value="SENIOR">Senior Citizen Concession</option>
+              <option value="LADIES">Ladies Quota</option>
+            </select>
+          </div>
+
+          {/* Search Trains CTA Button */}
+          <div style={{ marginTop: '1.25rem' }}>
             <button
               type="button"
-              onClick={handleSwapStations}
+              onClick={searchTrains}
+              disabled={isSearching}
+              className="btn btn-primary"
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', height: '42px', padding: '0 1.25rem' }}
+            >
+              {isSearching ? <RefreshCw size={18} className="animate-spin" /> : <Search size={18} />}
+              <span>{isSearching ? 'Searching...' : 'Search Trains'}</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Live Train Results List */}
+      <div style={{ marginBottom: '2.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+            Available Train Connections ({trainsList.length})
+          </h3>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            Quota: <strong>{quota}</strong> • Free Gourmet Meal Included on Vande Bharat
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {trainsList.map((trn) => (
+            <div
+              key={trn.id || trn._id || trn.trainNumber}
+              className="glass-panel"
               style={{
-                background: 'none',
-                border: '1px solid var(--border)',
-                borderRadius: '50%',
-                width: '36px',
-                height: '36px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                color: 'var(--color-primary)',
-                backgroundColor: 'var(--bg-surface)',
-                marginTop: '1.25rem'
+                padding: '1.75rem',
+                borderRadius: 'var(--radius-xl)',
+                border: '1px solid var(--border-strong)'
               }}
             >
-              <ArrowRightLeft size={16} />
-            </button>
-
-            {/* To Station */}
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>To Station</label>
-              <select
-                value={toStation}
-                onChange={(e) => setToStation(e.target.value)}
-                className="form-input no-icon"
-                style={{ fontWeight: 700, fontSize: '0.95rem' }}
-              >
-                {POPULAR_STATIONS.map((st) => (
-                  <option key={st.code} value={st.code}>
-                    {st.flag} {st.name} ({st.code})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Travel Date */}
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Travel Date</label>
-              <input
-                type="date"
-                value={travelDate}
-                onChange={(e) => setTravelDate(e.target.value)}
-                className="form-input no-icon"
-                style={{ fontWeight: 600, fontSize: '0.875rem' }}
-              />
-            </div>
-
-            {/* Quota */}
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Quota</label>
-              <select
-                value={quota}
-                onChange={(e) => setQuota(e.target.value)}
-                className="form-input no-icon"
-                style={{ fontWeight: 600, fontSize: '0.875rem' }}
-              >
-                <option value="GENERAL">General Quota</option>
-                <option value="TATKAL">Tatkal Priority</option>
-                <option value="SENIOR">Senior Citizen Concession</option>
-                <option value="LADIES">Ladies Quota</option>
-              </select>
-            </div>
-
-            {/* Search Trains CTA Button */}
-            <div style={{ marginTop: '1.25rem' }}>
-              <button
-                type="button"
-                onClick={searchTrains}
-                disabled={isSearching}
-                className="btn btn-primary"
-                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', height: '42px', padding: '0 1.25rem' }}
-              >
-                {isSearching ? <RefreshCw size={18} className="animate-spin" /> : <Search size={18} />}
-                <span>{isSearching ? 'Searching...' : 'Search Trains'}</span>
-              </button>
-            </div>
-
-          </div>
-        </div>
-
-        {/* Live Train Results List */}
-        <div style={{ marginBottom: '3.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-              Available Train Connections ({trainsList.length})
-            </h3>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-              Quota: <strong>{quota}</strong> • Free Gourmet Meal Included on Vande Bharat
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {trainsList.map((trn) => (
-              <div
-                key={trn.id || trn._id || trn.trainNumber}
-                className="glass-panel"
-                style={{
-                  padding: '1.75rem',
-                  borderRadius: 'var(--radius-xl)',
-                  border: '1px solid var(--border-strong)'
-                }}
-              >
-                {/* Train Top Info */}
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '1rem',
-                  paddingBottom: '1.25rem',
-                  borderBottom: '1px solid var(--border)',
-                  marginBottom: '1.25rem'
-                }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.2rem' }}>
-                      <span className="badge badge-accent" style={{ fontSize: '0.75rem' }}>
-                        ★ {trn.rating || 4.9} • {trn.punctuality || '99.4% On Time'}
-                      </span>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--color-primary)', fontWeight: 700 }}>
-                        ⚡ {trn.speed || 'Express'}
-                      </span>
-                    </div>
-                    <h4 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
-                      {trn.trainName} <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 600 }}>({trn.trainNumber})</span>
-                    </h4>
+              {/* Train Top Info */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '1rem',
+                paddingBottom: '1.25rem',
+                borderBottom: '1px solid var(--border)',
+                marginBottom: '1.25rem'
+              }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.2rem' }}>
+                    <span className="badge badge-accent" style={{ fontSize: '0.75rem' }}>
+                      ★ {trn.rating || 4.9} • {trn.punctuality || '99.4% On Time'}
+                    </span>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--color-primary)', fontWeight: 700 }}>
+                      ⚡ {trn.speed || 'Express'}
+                    </span>
                   </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', textAlign: 'center' }}>
-                    <div style={{ textAlign: 'left' }}>
-                      <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)' }}>{trn.depTime || '06:00 AM'}</div>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>{trn.from?.name || 'Station'}</div>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '100px' }}>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{trn.duration || '4h 45m'}</span>
-                      <div style={{ width: '100%', height: '2px', backgroundColor: 'var(--border-strong)', margin: '0.35rem 0', position: 'relative' }}>
-                        <Train size={14} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'var(--color-primary)' }} />
-                      </div>
-                      <span style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 700 }}>Non-Stop Daily</span>
-                    </div>
-
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)' }}>{trn.arrTime || '10:45 AM'}</div>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>{trn.to?.name || 'Destination'}</div>
-                    </div>
-                  </div>
+                  <h4 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
+                    {trn.trainName} <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 600 }}>({trn.trainNumber})</span>
+                  </h4>
                 </div>
 
-                {/* Available Classes & Pricing Badges */}
-                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap' }}>
-                    {(trn.classes || []).map((cls, cIdx) => (
-                      <div
-                        key={cIdx}
-                        onClick={() => handleOpenBooking(trn, cls)}
-                        style={{
-                          backgroundColor: 'var(--bg-page)',
-                          border: '1.5px solid var(--border)',
-                          borderRadius: 'var(--radius-md)',
-                          padding: '0.75rem 1.15rem',
-                          cursor: 'pointer',
-                          minWidth: '160px',
-                          transition: 'border-color 0.2s ease, transform 0.2s ease'
-                        }}
-                        onMouseEnter={e => {
-                          e.currentTarget.style.borderColor = 'var(--color-primary)';
-                          e.currentTarget.style.transform = 'translateY(-2px)';
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.borderColor = 'var(--border)';
-                          e.currentTarget.style.transform = 'translateY(0)';
-                        }}
-                      >
-                        <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>{cls.type}</div>
-                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--color-primary)', margin: '0.15rem 0' }}>
-                          {formatPrice(cls.fare)}
-                        </div>
-                        <div style={{ fontSize: '0.75rem', fontWeight: 800, color: cls.statusColor || '#166534' }}>
-                          ✓ {cls.status}
-                        </div>
-                      </div>
-                    ))}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', textAlign: 'center' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)' }}>{trn.depTime || '06:00 AM'}</div>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>{trn.from?.name || 'Station'}</div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => handleOpenBooking(trn, trn.classes?.[0] || { type: 'AC Chair Car (CC)', fare: 1450, status: 'AVAILABLE' })}
-                    className="btn btn-primary"
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: 'var(--shadow-glow)' }}
-                  >
-                    <span>Book Train Ticket</span>
-                    <ChevronRight size={16} />
-                  </button>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '100px' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{trn.duration || '4h 45m'}</span>
+                    <div style={{ width: '100%', height: '2px', backgroundColor: 'var(--border-strong)', margin: '0.35rem 0', position: 'relative' }}>
+                      <Train size={14} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'var(--color-primary)' }} />
+                    </div>
+                    <span style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 700 }}>Non-Stop Daily</span>
+                  </div>
+
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)' }}>{trn.arrTime || '10:45 AM'}</div>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>{trn.to?.name || 'Destination'}</div>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
 
+              {/* Available Classes & Pricing Badges */}
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap' }}>
+                  {(trn.classes || []).map((cls, cIdx) => (
+                    <div
+                      key={cIdx}
+                      onClick={() => handleOpenBooking(trn, cls)}
+                      style={{
+                        backgroundColor: 'var(--bg-page)',
+                        border: '1.5px solid var(--border)',
+                        borderRadius: 'var(--radius-md)',
+                        padding: '0.75rem 1.15rem',
+                        cursor: 'pointer',
+                        minWidth: '160px',
+                        transition: 'border-color 0.2s ease, transform 0.2s ease'
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.borderColor = 'var(--color-primary)';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.borderColor = 'var(--border)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
+                    >
+                      <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>{cls.type}</div>
+                      <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--color-primary)', margin: '0.15rem 0' }}>
+                        {formatPrice(cls.fare)}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', fontWeight: 800, color: cls.statusColor || '#166534' }}>
+                        ✓ {cls.status}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleOpenBooking(trn, trn.classes?.[0] || { type: 'AC Chair Car (CC)', fare: 1450, status: 'AVAILABLE' })}
+                  className="btn btn-primary"
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: 'var(--shadow-glow)' }}
+                >
+                  <span>Book Train Ticket</span>
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Train Ticket Booking & Barcode E-Voucher Modal */}

@@ -125,219 +125,209 @@ export const CabBookingView = ({ currency = 'INR' }) => {
   };
 
   return (
-    <div className="traveler-homepage-container" style={{ padding: '0.75rem 1.5rem 2.5rem 1.5rem', minHeight: 'calc(100vh - 120px)' }}>
-      <div style={{ maxWidth: '1240px', margin: '0 auto' }}>
+    <div style={{ marginTop: '1rem', marginBottom: '2.5rem' }}>
+      
+      {/* Standalone Cab Search Widget - Clean & Tightly Aligned */}
+      <div className="glass-panel" style={{
+        padding: '1.5rem',
+        borderRadius: 'var(--radius-xl)',
+        border: '1.5px solid var(--border-strong)',
+        boxShadow: 'var(--shadow-lg)',
+        marginBottom: '2rem'
+      }}>
         
-        {/* Header Hero Banner */}
-        <div className="traveler-hero-banner" style={{ padding: '2rem 2.25rem', marginBottom: '1.5rem' }}>
-          <div className="hero-glow-ambient" />
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
-              <span className="badge badge-accent" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                <Car size={14} /> Doorstep Airport Transfers & Outstation Cabs
-              </span>
-              <span className="badge badge-warning" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                <ShieldCheck size={14} /> Zero Flight Delay Cancellation Penalty
-              </span>
-            </div>
+        {/* Section Header Badge */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <span className="badge badge-accent" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.35rem 0.85rem' }}>
+              <Car size={14} /> Doorstep Airport Transfers & Outstation Chauffeurs
+            </span>
+            <span className="badge badge-warning" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+              <ShieldCheck size={14} /> Flight Delay Auto-Tracking
+            </span>
+          </div>
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            Airport Pickups • Outstation Trips • Local Rentals
+          </span>
+        </div>
 
-            <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.2rem 0' }}>
-              Chauffeur Cabs & Airport Taxi Rides 🚖
-            </h1>
-            <p className="handwritten-tag" style={{ margin: '0.2rem 0 0.5rem 0', fontSize: '1.5rem' }}>
-              “On-time pickup, sanitized cars, and experienced drivers at your service.”
-            </p>
+        {/* Service Tabs */}
+        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+          {[
+            { id: 'airport', label: '✈️ Airport Transfers' },
+            { id: 'outstation', label: '🚗 Outstation One-Way & Round-Trip' },
+            { id: 'rental', label: '⏱️ Hourly Local Rentals' }
+          ].map((st) => (
+            <button
+              key={st.id}
+              type="button"
+              onClick={() => setCabServiceType(st.id)}
+              className={`btn ${cabServiceType === st.id ? 'btn-primary' : 'btn-outline'}`}
+              style={{ borderRadius: '999px', padding: '0.45rem 1.15rem' }}
+            >
+              {st.label}
+            </button>
+          ))}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 160px 140px auto', gap: '1rem', alignItems: 'center' }}>
+          {/* Pickup Location */}
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pickup Location</label>
+            <input
+              type="text"
+              value={pickupLocation}
+              onChange={(e) => setPickupLocation(e.target.value)}
+              className="form-input no-icon"
+              style={{ fontWeight: 600, fontSize: '0.9rem' }}
+              placeholder="Airport, Hotel, or Station Name..."
+            />
+          </div>
+
+          {/* Drop Location */}
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Drop Destination</label>
+            <input
+              type="text"
+              value={dropLocation}
+              onChange={(e) => setDropLocation(e.target.value)}
+              className="form-input no-icon"
+              style={{ fontWeight: 600, fontSize: '0.9rem' }}
+              placeholder="Hotel, City, or Residence..."
+            />
+          </div>
+
+          {/* Pickup Date */}
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Date</label>
+            <input
+              type="date"
+              value={pickupDate}
+              onChange={(e) => setPickupDate(e.target.value)}
+              className="form-input no-icon"
+              style={{ fontWeight: 600, fontSize: '0.85rem' }}
+            />
+          </div>
+
+          {/* Pickup Time */}
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Time</label>
+            <input
+              type="text"
+              value={pickupTime}
+              onChange={(e) => setPickupTime(e.target.value)}
+              className="form-input no-icon"
+              style={{ fontWeight: 600, fontSize: '0.85rem' }}
+            />
+          </div>
+
+          {/* Search Cabs Button */}
+          <div style={{ marginTop: '1.25rem' }}>
+            <button
+              type="button"
+              onClick={searchCabs}
+              disabled={isSearching}
+              className="btn btn-primary"
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', height: '42px', padding: '0 1.25rem' }}
+            >
+              {isSearching ? <RefreshCw size={18} className="animate-spin" /> : <Search size={18} />}
+              <span>{isSearching ? 'Searching...' : 'Search Cabs'}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Cab Fleet Options Grid */}
+      <div style={{ marginBottom: '2.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+            Available Vehicle Fleet ({cabsList.length})
+          </h3>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            Service: <strong>{cabServiceType.toUpperCase()}</strong> • Taxes & Tolls Included
           </div>
         </div>
 
-        {/* Cab Service Type Switcher & Search Panel */}
-        <div className="glass-panel" style={{
-          padding: '1.5rem',
-          borderRadius: 'var(--radius-xl)',
-          border: '1px solid var(--border-strong)',
-          boxShadow: 'var(--shadow-lg)',
-          marginBottom: '2rem'
-        }}>
-          
-          {/* Service Tabs */}
-          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-            {[
-              { id: 'airport', label: '✈️ Airport Transfers' },
-              { id: 'outstation', label: '🚗 Outstation One-Way & Round-Trip' },
-              { id: 'rental', label: '⏱️ Hourly Local Rentals' }
-            ].map((st) => (
-              <button
-                key={st.id}
-                type="button"
-                onClick={() => setCabServiceType(st.id)}
-                className={`btn ${cabServiceType === st.id ? 'btn-primary' : 'btn-outline'}`}
-                style={{ borderRadius: '999px', padding: '0.45rem 1.15rem' }}
-              >
-                {st.label}
-              </button>
-            ))}
-          </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.75rem' }}>
+          {cabsList.map((cab) => (
+            <div
+              key={cab.id || cab._id || cab.name}
+              className="glass-panel"
+              style={{
+                padding: '1.75rem',
+                borderRadius: 'var(--radius-xl)',
+                border: '1px solid var(--border-strong)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+              }}
+            >
+              <div>
+                <img
+                  src={cab.image || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=500&q=80'}
+                  alt={cab.name}
+                  style={{ width: '100%', height: '160px', borderRadius: 'var(--radius-lg)', objectFit: 'cover', marginBottom: '1rem' }}
+                />
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 160px 140px auto', gap: '1rem', alignItems: 'center' }}>
-            {/* Pickup Location */}
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pickup Location</label>
-              <input
-                type="text"
-                value={pickupLocation}
-                onChange={(e) => setPickupLocation(e.target.value)}
-                className="form-input no-icon"
-                style={{ fontWeight: 600, fontSize: '0.9rem' }}
-                placeholder="Airport, Hotel, or Station Name..."
-              />
-            </div>
-
-            {/* Drop Location */}
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Drop Destination</label>
-              <input
-                type="text"
-                value={dropLocation}
-                onChange={(e) => setDropLocation(e.target.value)}
-                className="form-input no-icon"
-                style={{ fontWeight: 600, fontSize: '0.9rem' }}
-                placeholder="Hotel, City, or Residence..."
-              />
-            </div>
-
-            {/* Pickup Date */}
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Date</label>
-              <input
-                type="date"
-                value={pickupDate}
-                onChange={(e) => setPickupDate(e.target.value)}
-                className="form-input no-icon"
-                style={{ fontWeight: 600, fontSize: '0.85rem' }}
-              />
-            </div>
-
-            {/* Pickup Time */}
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label" style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Time</label>
-              <input
-                type="text"
-                value={pickupTime}
-                onChange={(e) => setPickupTime(e.target.value)}
-                className="form-input no-icon"
-                style={{ fontWeight: 600, fontSize: '0.85rem' }}
-              />
-            </div>
-
-            {/* Search Cabs Button */}
-            <div style={{ marginTop: '1.25rem' }}>
-              <button
-                type="button"
-                onClick={searchCabs}
-                disabled={isSearching}
-                className="btn btn-primary"
-                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', height: '42px', padding: '0 1.25rem' }}
-              >
-                {isSearching ? <RefreshCw size={18} className="animate-spin" /> : <Search size={18} />}
-                <span>{isSearching ? 'Searching...' : 'Search Cabs'}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Cab Fleet Options Grid */}
-        <div style={{ marginBottom: '3.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-              Available Vehicle Fleet ({cabsList.length})
-            </h3>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-              Service: <strong>{cabServiceType.toUpperCase()}</strong> • Taxes & Tolls Included
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.75rem' }}>
-            {cabsList.map((cab) => (
-              <div
-                key={cab.id || cab._id || cab.name}
-                className="glass-panel"
-                style={{
-                  padding: '1.75rem',
-                  borderRadius: 'var(--radius-xl)',
-                  border: '1px solid var(--border-strong)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <div>
-                  <img
-                    src={cab.image || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=500&q=80'}
-                    alt={cab.name}
-                    style={{ width: '100%', height: '160px', borderRadius: 'var(--radius-lg)', objectFit: 'cover', marginBottom: '1rem' }}
-                  />
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                    <span className="badge badge-accent" style={{ fontSize: '0.7rem' }}>
-                      {cab.category}
-                    </span>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#D97706' }}>
-                      ★ {cab.rating || 4.9} (Verified Driver)
-                    </span>
-                  </div>
-
-                  <h4 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-                    {cab.name}
-                  </h4>
-
-                  <div style={{ display: 'flex', gap: '1rem', fontSize: '0.825rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-                    <span>👥 {cab.seats} Seats</span>
-                    <span>🧳 {cab.bags}</span>
-                  </div>
-
-                  {/* Features */}
-                  <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
-                    {(cab.features || ['AC', 'Sanitized']).map((f, fIdx) => (
-                      <span
-                        key={fIdx}
-                        style={{
-                          fontSize: '0.7rem',
-                          backgroundColor: 'var(--bg-page)',
-                          padding: '0.2rem 0.55rem',
-                          borderRadius: '4px',
-                          border: '1px solid var(--border)',
-                          color: 'var(--text-secondary)'
-                        }}
-                      >
-                        ✓ {f}
-                      </span>
-                    ))}
-                  </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                  <span className="badge badge-accent" style={{ fontSize: '0.7rem' }}>
+                    {cab.category}
+                  </span>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#D97706' }}>
+                    ★ {cab.rating || 4.9} (Verified Driver)
+                  </span>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
-                  <div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Flat Estimate</div>
-                    <div style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--color-primary)' }}>
-                      {formatPrice(cab.basePrice)}
-                    </div>
-                  </div>
+                <h4 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+                  {cab.name}
+                </h4>
 
-                  <button
-                    type="button"
-                    onClick={() => handleOpenBooking(cab)}
-                    className="btn btn-primary"
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', boxShadow: 'var(--shadow-glow)' }}
-                  >
-                    <span>Confirm Ride</span>
-                    <ChevronRight size={16} />
-                  </button>
+                <div style={{ display: 'flex', gap: '1rem', fontSize: '0.825rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+                  <span>👥 {cab.seats} Seats</span>
+                  <span>🧳 {cab.bags}</span>
+                </div>
+
+                {/* Features */}
+                <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
+                  {(cab.features || ['AC', 'Sanitized']).map((f, fIdx) => (
+                    <span
+                      key={fIdx}
+                      style={{
+                        fontSize: '0.7rem',
+                        backgroundColor: 'var(--bg-page)',
+                        padding: '0.2rem 0.55rem',
+                        borderRadius: '4px',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-secondary)'
+                      }}
+                    >
+                      ✓ {f}
+                    </span>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
 
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Flat Estimate</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--color-primary)' }}>
+                    {formatPrice(cab.basePrice)}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleOpenBooking(cab)}
+                  className="btn btn-primary"
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', boxShadow: 'var(--shadow-glow)' }}
+                >
+                  <span>Confirm Ride</span>
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Cab Booking & QR Voucher Modal */}
