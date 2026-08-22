@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Car, Calendar, Clock, Search, CheckCircle, ShieldCheck,
-  MapPin, Users, Phone, Award, Sparkles, X, Printer, ChevronRight
+  MapPin, Users, Phone, Award, Sparkles, X, Printer, ChevronRight, RefreshCw
 } from 'lucide-react';
 import { CURRENCIES } from '../data/multiStopData';
 import { HotelCheckinQRCode } from './BarcodeGenerator';
@@ -49,6 +49,10 @@ export const CabBookingView = ({ currency = 'INR' }) => {
   const [pickupDate, setPickupDate] = useState('2026-09-15');
   const [pickupTime, setPickupTime] = useState('10:30 AM');
 
+  // Loaded Cabs State & Loading State
+  const [cabsList, setCabsList] = useState(CAB_TYPES);
+  const [isSearching, setIsSearching] = useState(false);
+
   // Booking Modal State
   const [bookingModal, setBookingModal] = useState({ open: false, cab: null });
   const [passengerName, setPassengerName] = useState('Aarav Sharma');
@@ -59,6 +63,38 @@ export const CabBookingView = ({ currency = 'INR' }) => {
   const currSym = CURRENCIES[currency]?.symbol || '₹';
   const currRate = CURRENCIES[currency]?.rate || 1;
   const formatPrice = (inr) => `${currSym}${Math.round(inr * currRate).toLocaleString()}`;
+
+  // Fetch Live Cabs from Backend API
+  const searchCabs = async () => {
+    setIsSearching(true);
+    try {
+      const response = await fetch('http://localhost:5000/api/cabs/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ serviceType: cabServiceType, pickupLocation, dropLocation, pickupDate, pickupTime })
+      });
+      const data = await response.json();
+      if (data.availableCabs && data.availableCabs.length > 0) {
+        // Merge image assets if missing
+        const merged = data.availableCabs.map(c => {
+          const match = CAB_TYPES.find(local => local.id === c.id || local.name.includes(c.name));
+          return { ...c, image: c.image || match?.image || CAB_TYPES[0].image };
+        });
+        setCabsList(merged);
+      } else {
+        setCabsList(CAB_TYPES);
+      }
+    } catch (err) {
+      console.warn('Cab search API warning, using local cab list:', err);
+      setCabsList(CAB_TYPES);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  useEffect(() => {
+    searchCabs();
+  }, [cabServiceType]);
 
   const handleOpenBooking = (cab) => {
     setBookingModal({ open: true, cab });
@@ -89,14 +125,14 @@ export const CabBookingView = ({ currency = 'INR' }) => {
   };
 
   return (
-    <div className="traveler-homepage-container" style={{ padding: '2rem 1.5rem', minHeight: 'calc(100vh - 120px)' }}>
+    <div className="traveler-homepage-container" style={{ padding: '0.75rem 1.5rem 2.5rem 1.5rem', minHeight: 'calc(100vh - 120px)' }}>
       <div style={{ maxWidth: '1240px', margin: '0 auto' }}>
         
         {/* Header Hero Banner */}
-        <div className="traveler-hero-banner" style={{ padding: '2.5rem 2.25rem', marginBottom: '2rem' }}>
+        <div className="traveler-hero-banner" style={{ padding: '2rem 2.25rem', marginBottom: '1.5rem' }}>
           <div className="hero-glow-ambient" />
           <div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
               <span className="badge badge-accent" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
                 <Car size={14} /> Doorstep Airport Transfers & Outstation Cabs
               </span>
@@ -105,10 +141,10 @@ export const CabBookingView = ({ currency = 'INR' }) => {
               </span>
             </div>
 
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.2rem 0' }}>
+            <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.2rem 0' }}>
               Chauffeur Cabs & Airport Taxi Rides 🚖
             </h1>
-            <p className="handwritten-tag" style={{ margin: '0.2rem 0 0.75rem 0', fontSize: '1.6rem' }}>
+            <p className="handwritten-tag" style={{ margin: '0.2rem 0 0.5rem 0', fontSize: '1.5rem' }}>
               “On-time pickup, sanitized cars, and experienced drivers at your service.”
             </p>
           </div>
@@ -116,15 +152,15 @@ export const CabBookingView = ({ currency = 'INR' }) => {
 
         {/* Cab Service Type Switcher & Search Panel */}
         <div className="glass-panel" style={{
-          padding: '1.75rem',
+          padding: '1.5rem',
           borderRadius: 'var(--radius-xl)',
           border: '1px solid var(--border-strong)',
           boxShadow: 'var(--shadow-lg)',
-          marginBottom: '2.5rem'
+          marginBottom: '2rem'
         }}>
           
           {/* Service Tabs */}
-          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
             {[
               { id: 'airport', label: '✈️ Airport Transfers' },
               { id: 'outstation', label: '🚗 Outstation One-Way & Round-Trip' },
@@ -135,7 +171,7 @@ export const CabBookingView = ({ currency = 'INR' }) => {
                 type="button"
                 onClick={() => setCabServiceType(st.id)}
                 className={`btn ${cabServiceType === st.id ? 'btn-primary' : 'btn-outline'}`}
-                style={{ borderRadius: '999px', padding: '0.5rem 1.25rem' }}
+                style={{ borderRadius: '999px', padding: '0.45rem 1.15rem' }}
               >
                 {st.label}
               </button>
@@ -197,11 +233,13 @@ export const CabBookingView = ({ currency = 'INR' }) => {
             <div style={{ marginTop: '1.25rem' }}>
               <button
                 type="button"
+                onClick={searchCabs}
+                disabled={isSearching}
                 className="btn btn-primary"
                 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', height: '42px', padding: '0 1.25rem' }}
               >
-                <Search size={18} />
-                <span>Search Cabs</span>
+                {isSearching ? <RefreshCw size={18} className="animate-spin" /> : <Search size={18} />}
+                <span>{isSearching ? 'Searching...' : 'Search Cabs'}</span>
               </button>
             </div>
           </div>
@@ -211,7 +249,7 @@ export const CabBookingView = ({ currency = 'INR' }) => {
         <div style={{ marginBottom: '3.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
             <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-              Available Vehicle Fleet ({CAB_TYPES.length})
+              Available Vehicle Fleet ({cabsList.length})
             </h3>
             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
               Service: <strong>{cabServiceType.toUpperCase()}</strong> • Taxes & Tolls Included
@@ -219,9 +257,9 @@ export const CabBookingView = ({ currency = 'INR' }) => {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.75rem' }}>
-            {CAB_TYPES.map((cab) => (
+            {cabsList.map((cab) => (
               <div
-                key={cab.id}
+                key={cab.id || cab._id || cab.name}
                 className="glass-panel"
                 style={{
                   padding: '1.75rem',
@@ -234,7 +272,7 @@ export const CabBookingView = ({ currency = 'INR' }) => {
               >
                 <div>
                   <img
-                    src={cab.image}
+                    src={cab.image || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=500&q=80'}
                     alt={cab.name}
                     style={{ width: '100%', height: '160px', borderRadius: 'var(--radius-lg)', objectFit: 'cover', marginBottom: '1rem' }}
                   />
@@ -244,7 +282,7 @@ export const CabBookingView = ({ currency = 'INR' }) => {
                       {cab.category}
                     </span>
                     <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#D97706' }}>
-                      ★ {cab.rating} (Verified Driver)
+                      ★ {cab.rating || 4.9} (Verified Driver)
                     </span>
                   </div>
 
@@ -259,7 +297,7 @@ export const CabBookingView = ({ currency = 'INR' }) => {
 
                   {/* Features */}
                   <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
-                    {cab.features.map((f, fIdx) => (
+                    {(cab.features || ['AC', 'Sanitized']).map((f, fIdx) => (
                       <span
                         key={fIdx}
                         style={{

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Train, Calendar, Search, CheckCircle, ShieldCheck, Clock,
-  MapPin, Tag, Users, ArrowRightLeft, Sparkles, Filter, ChevronRight, X, Printer
+  MapPin, Tag, Users, ArrowRightLeft, Sparkles, Filter, ChevronRight, X, Printer, RefreshCw
 } from 'lucide-react';
 import { CURRENCIES } from '../data/multiStopData';
 import { FlightBarcode } from './BarcodeGenerator';
@@ -55,7 +55,7 @@ const INITIAL_TRAINS = [
   },
   {
     id: 'trn-3',
-    trainName: 'Rajdhani Express',
+    trainName: 'Rajdhani Superfast Express',
     trainNumber: '12952 / RAJDHANI',
     from: { code: 'NDLS', name: 'New Delhi Central', city: 'New Delhi' },
     to: { code: 'MMCT', name: 'Mumbai Central', city: 'Mumbai' },
@@ -96,8 +96,11 @@ export const TrainBookingView = ({ currency = 'INR' }) => {
   const [fromStation, setFromStation] = useState('NDLS');
   const [toStation, setToStation] = useState('JP');
   const [travelDate, setTravelDate] = useState('2026-09-15');
-  const [selectedClassFilter, setSelectedClassFilter] = useState('ALL');
   const [quota, setQuota] = useState('GENERAL');
+
+  // Loaded Trains State & Loading State
+  const [trainsList, setTrainsList] = useState(INITIAL_TRAINS);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Booking Modal State
   const [bookingModal, setBookingModal] = useState({ open: false, train: null, selectedClass: null });
@@ -108,6 +111,33 @@ export const TrainBookingView = ({ currency = 'INR' }) => {
   const currSym = CURRENCIES[currency]?.symbol || '₹';
   const currRate = CURRENCIES[currency]?.rate || 1;
   const formatPrice = (inr) => `${currSym}${Math.round(inr * currRate).toLocaleString()}`;
+
+  // Fetch Live Trains from Backend API or Filter Local Data
+  const searchTrains = async () => {
+    setIsSearching(true);
+    try {
+      const response = await fetch('http://localhost:5000/api/trains/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fromStation, toStation, travelDate, quota })
+      });
+      const data = await response.json();
+      if (data.trains && data.trains.length > 0) {
+        setTrainsList(data.trains);
+      } else {
+        setTrainsList(INITIAL_TRAINS);
+      }
+    } catch (err) {
+      console.warn('Train search API warning, using client train list:', err);
+      setTrainsList(INITIAL_TRAINS);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  useEffect(() => {
+    searchTrains();
+  }, []);
 
   const handleSwapStations = () => {
     const temp = fromStation;
@@ -120,7 +150,7 @@ export const TrainBookingView = ({ currency = 'INR' }) => {
     setConfirmedVoucher(null);
   };
 
-  const handleConfirmTrainBooking = (e) => {
+  const handleConfirmTrainBooking = async (e) => {
     e.preventDefault();
     const pnr = `PNR-${Math.floor(2000000000 + Math.random() * 8000000000)}`;
     const ticketNo = `ETKT-TRN-${Math.floor(10000000 + Math.random() * 90000000)}`;
@@ -270,11 +300,13 @@ export const TrainBookingView = ({ currency = 'INR' }) => {
             <div style={{ marginTop: '1.25rem' }}>
               <button
                 type="button"
+                onClick={searchTrains}
+                disabled={isSearching}
                 className="btn btn-primary"
                 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', height: '42px', padding: '0 1.25rem' }}
               >
-                <Search size={18} />
-                <span>Search Trains</span>
+                {isSearching ? <RefreshCw size={18} className="animate-spin" /> : <Search size={18} />}
+                <span>{isSearching ? 'Searching...' : 'Search Trains'}</span>
               </button>
             </div>
 
@@ -285,7 +317,7 @@ export const TrainBookingView = ({ currency = 'INR' }) => {
         <div style={{ marginBottom: '3.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
             <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-              Available Train Connections ({INITIAL_TRAINS.length})
+              Available Train Connections ({trainsList.length})
             </h3>
             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
               Quota: <strong>{quota}</strong> • Free Gourmet Meal Included on Vande Bharat
@@ -293,9 +325,9 @@ export const TrainBookingView = ({ currency = 'INR' }) => {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {INITIAL_TRAINS.map((trn) => (
+            {trainsList.map((trn) => (
               <div
-                key={trn.id}
+                key={trn.id || trn._id || trn.trainNumber}
                 className="glass-panel"
                 style={{
                   padding: '1.75rem',
@@ -317,10 +349,10 @@ export const TrainBookingView = ({ currency = 'INR' }) => {
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.2rem' }}>
                       <span className="badge badge-accent" style={{ fontSize: '0.75rem' }}>
-                        ★ {trn.rating} • {trn.punctuality}
+                        ★ {trn.rating || 4.9} • {trn.punctuality || '99.4% On Time'}
                       </span>
                       <span style={{ fontSize: '0.8rem', color: 'var(--color-primary)', fontWeight: 700 }}>
-                        ⚡ {trn.speed}
+                        ⚡ {trn.speed || 'Express'}
                       </span>
                     </div>
                     <h4 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
@@ -330,12 +362,12 @@ export const TrainBookingView = ({ currency = 'INR' }) => {
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', textAlign: 'center' }}>
                     <div style={{ textAlign: 'left' }}>
-                      <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)' }}>{trn.depTime}</div>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>{trn.from.name}</div>
+                      <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)' }}>{trn.depTime || '06:00 AM'}</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>{trn.from?.name || 'Station'}</div>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '100px' }}>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{trn.duration}</span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{trn.duration || '4h 45m'}</span>
                       <div style={{ width: '100%', height: '2px', backgroundColor: 'var(--border-strong)', margin: '0.35rem 0', position: 'relative' }}>
                         <Train size={14} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'var(--color-primary)' }} />
                       </div>
@@ -343,8 +375,8 @@ export const TrainBookingView = ({ currency = 'INR' }) => {
                     </div>
 
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)' }}>{trn.arrTime}</div>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>{trn.to.name}</div>
+                      <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)' }}>{trn.arrTime || '10:45 AM'}</div>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>{trn.to?.name || 'Destination'}</div>
                     </div>
                   </div>
                 </div>
@@ -352,7 +384,7 @@ export const TrainBookingView = ({ currency = 'INR' }) => {
                 {/* Available Classes & Pricing Badges */}
                 <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap' }}>
-                    {trn.classes.map((cls, cIdx) => (
+                    {(trn.classes || []).map((cls, cIdx) => (
                       <div
                         key={cIdx}
                         onClick={() => handleOpenBooking(trn, cls)}
@@ -378,7 +410,7 @@ export const TrainBookingView = ({ currency = 'INR' }) => {
                         <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--color-primary)', margin: '0.15rem 0' }}>
                           {formatPrice(cls.fare)}
                         </div>
-                        <div style={{ fontSize: '0.75rem', fontWeight: 800, color: cls.statusColor }}>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 800, color: cls.statusColor || '#166534' }}>
                           ✓ {cls.status}
                         </div>
                       </div>
@@ -387,7 +419,7 @@ export const TrainBookingView = ({ currency = 'INR' }) => {
 
                   <button
                     type="button"
-                    onClick={() => handleOpenBooking(trn, trn.classes[0])}
+                    onClick={() => handleOpenBooking(trn, trn.classes?.[0] || { type: 'AC Chair Car (CC)', fare: 1450, status: 'AVAILABLE' })}
                     className="btn btn-primary"
                     style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: 'var(--shadow-glow)' }}
                   >
@@ -508,7 +540,7 @@ export const TrainBookingView = ({ currency = 'INR' }) => {
                     {bookingModal.train?.trainName} ({bookingModal.train?.trainNumber})
                   </div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
-                    Class: <strong>{bookingModal.selectedClass?.type}</strong> • Fare: <strong style={{ color: 'var(--color-primary)' }}>{formatPrice(bookingModal.selectedClass?.fare)}</strong>
+                    Class: <strong>{bookingModal.selectedClass?.type}</strong> • Fare: <strong style={{ color: 'var(--color-primary)' }}>{formatPrice(bookingModal.selectedClass?.fare || 1450)}</strong>
                   </div>
                 </div>
 
@@ -543,7 +575,7 @@ export const TrainBookingView = ({ currency = 'INR' }) => {
                   style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', boxShadow: 'var(--shadow-glow)' }}
                 >
                   <Train size={18} />
-                  <span>Pay {formatPrice(bookingModal.selectedClass?.fare)} & Issue Train PNR Ticket</span>
+                  <span>Pay {formatPrice(bookingModal.selectedClass?.fare || 1450)} & Issue Train PNR Ticket</span>
                 </button>
               </form>
             )}

@@ -244,7 +244,7 @@ const UserDashboard = () => {
   // Traveler Homepage View (MakeMyTrip Multi-Stop Experience with Theme Harmony)
   return (
     <div className="traveler-homepage-container">
-      <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '2rem 1.5rem' }}>
+      <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '0.75rem 1.5rem 2.5rem 1.5rem' }}>
         
         {/* Theme-Compliant Traveler Hero Header */}
         <div className="traveler-hero-banner">
