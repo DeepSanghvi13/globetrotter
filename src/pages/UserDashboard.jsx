@@ -13,6 +13,7 @@ import { MultiStopPackages } from '../components/MultiStopPackages';
 import { BookingVoucherModal } from '../components/BookingVoucherModal';
 import { TrainBookingView } from '../components/TrainBookingView';
 import { CabBookingView } from '../components/CabBookingView';
+import { SupportChatWidget } from '../components/SupportChatWidget';
 import { POPULAR_CITIES, CURRENCIES } from '../data/multiStopData';
 
 const FEATURED_ROUTES = [
@@ -56,9 +57,9 @@ const UserDashboard = () => {
   const { currentUser } = useAuth();
   const { isDark } = useTheme();
 
-  // Multi-Stop MakeMyTrip Search & Itinerary Engine State
+  // Multi-Stop GlobeTrotter Search & Itinerary Engine State
   const [currency, setCurrency] = useState('INR');
-  const [activeTab, setActiveTab] = useState('flights'); // 'flights' | 'packages' | 'custom' | 'trains' | 'cabs'
+  const [activeTab, setActiveTab] = useState('flights'); // 'flights' | 'packages' | 'custom'
   const [activeSearch, setActiveSearch] = useState(null); // When set, displays MultiStopResultsView
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [currentBookingDetails, setCurrentBookingDetails] = useState(null);
@@ -241,10 +242,10 @@ const UserDashboard = () => {
     );
   }
 
-  // Traveler Homepage View (MakeMyTrip Multi-Stop Experience with Theme Harmony)
+  // Traveler Homepage View (GlobeTrotter Multi-Stop Experience with Theme Harmony)
   return (
     <div className="traveler-homepage-container">
-      <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '2rem 1.5rem' }}>
+      <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '0.75rem 1.5rem 2.5rem 1.5rem' }}>
         
         {/* Theme-Compliant Traveler Hero Header */}
         <div className="traveler-hero-banner">
@@ -352,7 +353,7 @@ const UserDashboard = () => {
           </div>
         </div>
 
-        {/* 1. MakeMyTrip Service Switcher Header */}
+        {/* 1. GlobeTrotter Service Switcher Header */}
         <MultiStopSearchWidget
           onSearch={handleSearchMultiStop}
           currency={currency}
@@ -382,7 +383,7 @@ const UserDashboard = () => {
           />
         )}
 
-        {/* 5. Curated MakeMyTrip Multi-Stop Packages */}
+        {/* 5. Curated GlobeTrotter Multi-Stop Packages */}
         {activeTab !== 'trains' && activeTab !== 'cabs' && (
           <MultiStopPackages
             currency={currency}
@@ -796,6 +797,9 @@ const UserDashboard = () => {
           </div>
         </div>
       )}
+
+      {/* 24/7 Live Support Concierge Floating Widget */}
+      <SupportChatWidget />
     </div>
   );
 };

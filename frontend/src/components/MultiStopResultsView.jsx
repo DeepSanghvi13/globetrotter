@@ -698,7 +698,7 @@ export const MultiStopResultsView = ({
           })}
         </div>
 
-        {/* Right Column: Sticky MakeMyTrip Fare Breakdown Sidebar */}
+        {/* Right Column: Sticky GlobeTrotter Fare Breakdown Sidebar */}
         <div style={{ position: 'sticky', top: '5.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           
           {/* Fare Summary Card */}

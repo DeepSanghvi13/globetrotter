@@ -1,4 +1,4 @@
-// Multi-Stop Cities & Airport Data (MakeMyTrip Style)
+// Multi-Stop Cities & Airport Data (GlobeTrotter Style)
 export const POPULAR_CITIES = [
   { code: 'DEL', name: 'New Delhi', airport: 'Indira Gandhi International Airport', country: 'India', flag: '🇮🇳', region: 'Domestic' },
   { code: 'BOM', name: 'Mumbai', airport: 'Chhatrapati Shivaji Maharaj International', country: 'India', flag: '🇮🇳', region: 'Domestic' },
@@ -137,6 +137,19 @@ export const MOCK_CAB_DATA = [
   }
 ];
 
+// Sample multi-stop flight options generator
+export const MOCK_FLIGHT_DATA = {
+  airlines: [
+    { name: 'Air India', logo: '✈️', code: 'AI' },
+    { name: 'Emirates', logo: '🇦🇪', code: 'EK' },
+    { name: 'IndiGo', logo: '🛫', code: '6E' },
+    { name: 'Air France', logo: '🇫🇷', code: 'AF' },
+    { name: 'Singapore Airlines', logo: '🇸🇬', code: 'SQ' },
+    { name: 'Swiss International', logo: '🇨🇭', code: 'LX' },
+    { name: 'Vistara', logo: '✨', code: 'UK' }
+  ]
+};
+
 // Hotels database for stops
 export const HOTELS_BY_CITY = {
   DEL: [
@@ -172,38 +185,70 @@ export const HOTELS_BY_CITY = {
     { name: 'ITC Rajputana, A Luxury Collection', stars: 5, rating: 4.8, reviews: 1350, pricePerNight: 8500, image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80', area: 'Palace Road, Gopalbari', amenities: ['Royal Courtyards', 'Peshawri Dining', 'Kaya Kalp Spa', 'Pool'] }
   ],
   LHR: [
-    { name: 'The Savoy London', stars: 5, rating: 4.95, reviews: 2300, pricePerNight: 31000, image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80', area: 'Strand, Covent Garden', amenities: ['Thames River View', 'Butler Service', 'Historic Savoy Grill', 'Luxury Spa'] }
+    { name: 'The Savoy London', stars: 5, rating: 4.95, reviews: 2300, pricePerNight: 31000, image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80', area: 'Strand, Covent Garden', amenities: ['Thames River View', 'Butler Service', 'Historic Savoy Grill', 'Luxury Spa'] },
+    { name: 'The Landmark London', stars: 5, rating: 4.87, reviews: 1200, pricePerNight: 22000, image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&q=80', area: 'Marylebone Road', amenities: ['Glass Atrium Courtyard', 'Indoor Pool', 'English Breakfast'] }
+  ],
+  BKK: [
+    { name: 'Mandarin Oriental Bangkok', stars: 5, rating: 4.97, reviews: 2800, pricePerNight: 18000, image: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&q=80', area: 'Chao Phraya Riverside', amenities: ['Private River Boats', 'World Class Spa', 'Thai Cooking Classes', 'Riverside Terrace'] },
+    { name: 'The Peninsula Bangkok', stars: 5, rating: 4.91, reviews: 1650, pricePerNight: 14000, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80', area: 'Charoennakorn Riverside', amenities: ['Three-Tiered Pool', 'Helipad Shuttle', 'Buffet Breakfast'] }
+  ],
+  KUL: [
+    { name: 'Grand Hyatt Kuala Lumpur', stars: 5, rating: 4.9, reviews: 1950, pricePerNight: 11000, image: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=600&q=80', area: 'KLCC (Petronas Twin Towers View)', amenities: ['Sky Lobby Panorama', 'THIRTY8 Restaurant', 'Outdoor Pool', 'Spa'] }
+  ],
+  UDR: [
+    { name: 'Taj Lake Palace Udaipur', stars: 5, rating: 4.98, reviews: 3100, pricePerNight: 34000, image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80', area: 'Lake Pichola Floating Palace', amenities: ['Private Boat Arrival', 'Jiva Spa Boat', 'Royal Butler Service', 'Heritage Suites'] }
   ]
 };
 
 // Sightseeing activities by city
 export const ACTIVITIES_BY_CITY = {
   DEL: [
-    { id: 'del-1', title: 'Old Delhi Street Food & Heritage Rickshaw Tour', duration: '3.5 Hours', rating: 4.9, price: 1499, tag: 'Food & Heritage', image: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=400&q=80' }
+    { id: 'del-1', title: 'Old Delhi Street Food & Heritage Rickshaw Tour', duration: '3.5 Hours', rating: 4.9, price: 1499, tag: 'Food & Heritage', image: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=400&q=80' },
+    { id: 'del-2', title: 'Qutub Minar & Humayun’s Tomb Guided History Walk', duration: '4 Hours', rating: 4.85, price: 1200, tag: 'UNESCO Sites', image: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=400&q=80' }
   ],
   DXB: [
     { id: 'dxb-1', title: 'Burj Khalifa 124th + 125th Floor & Dubai Aquarium', duration: '3 Hours', rating: 4.95, price: 3800, tag: 'Iconic View', image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&q=80' },
-    { id: 'dxb-2', title: 'Desert 4x4 Dune Bashing Safari with BBQ Buffet & Fire Show', duration: '6 Hours', rating: 4.92, price: 2900, tag: 'Adventure', image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&q=80' }
+    { id: 'dxb-2', title: 'Desert 4x4 Dune Bashing Safari with BBQ Buffet & Fire Show', duration: '6 Hours', rating: 4.92, price: 2900, tag: 'Adventure', image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&q=80' },
+    { id: 'dxb-3', title: 'Dubai Marina Luxury Yacht Cruise with Breakfast', duration: '2 Hours', rating: 4.88, price: 3200, tag: 'Luxury Cruise', image: 'https://images.unsplash.com/photo-1580977276076-ae4b7c933018?w=400&q=80' }
   ],
   CDG: [
     { id: 'cdg-1', title: 'Skip-the-Line Louvre Museum Guided Masterpieces Tour', duration: '3 Hours', rating: 4.94, price: 4200, tag: 'Art & Culture', image: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&q=80' },
-    { id: 'cdg-2', title: 'Eiffel Tower Summit Access + Seine River Cruise', duration: '4 Hours', rating: 4.91, price: 4800, tag: 'Must See', image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&q=80' }
+    { id: 'cdg-2', title: 'Eiffel Tower Summit Access + Seine River Cruise', duration: '4 Hours', rating: 4.91, price: 4800, tag: 'Must See', image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&q=80' },
+    { id: 'cdg-3', title: 'Montmartre Artists & Wine Tasting Gourmet Walk', duration: '2.5 Hours', rating: 4.86, price: 3400, tag: 'Culinary Walk', image: 'https://images.unsplash.com/photo-1549144511-f099e773c147?w=400&q=80' }
   ],
   FCO: [
-    { id: 'fco-1', title: 'Colosseum Underground & Roman Forum VIP Access', duration: '3.5 Hours', rating: 4.97, price: 4500, tag: 'Ancient Rome', image: 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&q=80' }
+    { id: 'fco-1', title: 'Colosseum Underground & Roman Forum VIP Access', duration: '3.5 Hours', rating: 4.97, price: 4500, tag: 'Ancient Rome', image: 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&q=80' },
+    { id: 'fco-2', title: 'Vatican Museums, Sistine Chapel & St. Peter’s Basilica', duration: '4 Hours', rating: 4.93, price: 4900, tag: 'Vatican Tour', image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400&q=80' }
   ],
   ZRH: [
-    { id: 'zrh-1', title: 'Mount Titlis Glacier Paradise & Ice Flyer Excursion', duration: '8 Hours', rating: 4.96, price: 9200, tag: 'Alpine Alps', image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=400&q=80' }
+    { id: 'zrh-1', title: 'Mount Titlis Glacier Paradise & Ice Flyer Excursion', duration: '8 Hours', rating: 4.96, price: 9200, tag: 'Alpine Alps', image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=400&q=80' },
+    { id: 'zrh-2', title: 'Lake Zurich Steamboat Cruise & Lindt Chocolate Factory', duration: '4 Hours', rating: 4.89, price: 3900, tag: 'Scenic & Sweets', image: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=400&q=80' }
   ],
   LHR: [
-    { id: 'lhr-1', title: 'Tower of London & Crown Jewels Early Access', duration: '3 Hours', rating: 4.93, price: 3800, tag: 'Royal History', image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&q=80' }
+    { id: 'lhr-1', title: 'Tower of London & Crown Jewels Early Access', duration: '3 Hours', rating: 4.93, price: 3800, tag: 'Royal History', image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&q=80' },
+    { id: 'lhr-2', title: 'Warner Bros. Harry Potter Studio Tour with Coach', duration: '7 Hours', rating: 4.98, price: 8200, tag: 'Movie Magic', image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&q=80' }
   ],
   SIN: [
-    { id: 'sin-1', title: 'Gardens by the Bay & Cloud Forest Flower Dome Pass', duration: '3 Hours', rating: 4.92, price: 2600, tag: 'Nature Wonder', image: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=400&q=80' }
+    { id: 'sin-1', title: 'Gardens by the Bay & Cloud Forest Flower Dome Pass', duration: '3 Hours', rating: 4.92, price: 2600, tag: 'Nature Wonder', image: 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=400&q=80' },
+    { id: 'sin-2', title: 'Sentosa Island Cable Car + Universal Studios Express', duration: '6 Hours', rating: 4.89, price: 5900, tag: 'Theme Park', image: 'https://images.unsplash.com/photo-1565967511849-76a60a516170?w=400&q=80' }
+  ],
+  BKK: [
+    { id: 'bkk-1', title: 'Grand Palace & Emerald Buddha Temple Tour', duration: '3.5 Hours', rating: 4.9, price: 2200, tag: 'Temple Wonder', image: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=400&q=80' },
+    { id: 'bkk-2', title: 'Damnoen Saduak Floating Market & Railway Market', duration: '6 Hours', rating: 4.86, price: 2800, tag: 'Local Culture', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80' }
+  ],
+  KUL: [
+    { id: 'kul-1', title: 'Batu Caves & Petronas Twin Towers Skybridge VIP', duration: '4 Hours', rating: 4.88, price: 2400, tag: 'Landmark', image: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=400&q=80' }
+  ],
+  JAI: [
+    { id: 'jai-1', title: 'Amber Fort Elephant / Jeep Safari & Sheesh Mahal Tour', duration: '3.5 Hours', rating: 4.91, price: 1600, tag: 'Royal Fortress', image: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=400&q=80' },
+    { id: 'jai-2', title: 'Hawa Mahal & City Palace Royal Heritage Photography Walk', duration: '2.5 Hours', rating: 4.87, price: 1100, tag: 'Culture Walk', image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&q=80' }
+  ],
+  UDR: [
+    { id: 'udr-1', title: 'Lake Pichola Sunset Luxury Heritage Boat Cruise', duration: '2 Hours', rating: 4.94, price: 1800, tag: 'Sunset Romance', image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&q=80' }
   ]
 };
 
-// Curated MakeMyTrip-Style Multi-Stop Packages
+// Curated GlobeTrotter-Style Multi-Stop Packages
 export const CURATED_MULTI_STOP_PACKAGES = [
   {
     id: 'pkg-europe-grandeur',

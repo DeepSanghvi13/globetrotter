@@ -664,7 +664,7 @@ export const MultiStopSearchWidget = ({
           </span>
         </div>
 
-        {/* Special Fare Categories (MakeMyTrip Feature) */}
+        {/* Special Fare Categories (GlobeTrotter Feature) */}
         <div style={{
           backgroundColor: 'var(--bg-page)',
           borderRadius: 'var(--radius-lg)',

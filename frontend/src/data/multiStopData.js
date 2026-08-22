@@ -1,4 +1,4 @@
-// Multi-Stop Cities & Airport Data (MakeMyTrip Style)
+// Multi-Stop Cities & Airport Data (GlobeTrotter Style)
 export const POPULAR_CITIES = [
   { code: 'DEL', name: 'New Delhi', airport: 'Indira Gandhi International Airport', country: 'India', flag: '🇮🇳', region: 'Domestic' },
   { code: 'BOM', name: 'Mumbai', airport: 'Chhatrapati Shivaji Maharaj International', country: 'India', flag: '🇮🇳', region: 'Domestic' },
@@ -248,7 +248,7 @@ export const ACTIVITIES_BY_CITY = {
   ]
 };
 
-// Curated MakeMyTrip-Style Multi-Stop Packages
+// Curated GlobeTrotter-Style Multi-Stop Packages
 export const CURATED_MULTI_STOP_PACKAGES = [
   {
     id: 'pkg-europe-grandeur',

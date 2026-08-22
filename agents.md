@@ -187,7 +187,7 @@ Use a **relational database** to store users, itineraries, stops, activities, an
   - Filtering by *All Journeys*, *Confirmed & Upcoming*, *Completed Stays*.
   - Route steppers (`DEL ➔ DXB ➔ CDG ➔ FCO`), PNR, passenger info, paid totals, and 1-click launch of `BookingVoucherModal` with all barcodes and QR check-in passes.
 - **About Us Page ([`AboutUs.jsx`](file:///c:/Users/darsh/OneDrive/Desktop/hackhaton/globetrotter-main/frontend/src/pages/AboutUs.jsx))**:
-  - Hero quote section, 4 platform key milestones (`150k+ Journeys`, `19+ Hubs`, `4.98 Rating`), 4-step MakeMyTrip Multi-Stop blueprint, and leadership team cards.
+  - Hero quote section, 4 platform key milestones (`150k+ Journeys`, `19+ Hubs`, `4.98 Rating`), 4-step GlobeTrotter Multi-Stop blueprint, and leadership team cards.
 - **Contact Us & Support Ticketing Page ([`ContactUs.jsx`](file:///c:/Users/darsh/OneDrive/Desktop/hackhaton/globetrotter-main/frontend/src/pages/ContactUs.jsx))**:
   - Interactive support ticket form with category selection, priority selector, and instant generated support ticket ID (`TKT-XXXXX`).
   - Global office cards (New Delhi HQ, Dubai Hub, Paris Office), 24/7 hotline/WhatsApp concierge, and interactive FAQ accordion.
@@ -224,8 +224,8 @@ Frontend: React 19 (Vite), Lucide React, Custom Dark/Light theme system via `The
   - Adaptive headline & handwritten editorial quote (Caveat font) aligning with golden sunset vs moonlit starry coastal drive.
   - Floating metric pills (Active Trips, Saved Routes, AI Planner) and glowing primary CTA.
 
-### [2026-08-22] - MakeMyTrip-Style Multi-Stop & Multi-City Journey Engine
-- **MakeMyTrip Dynamic Multi-Stop Search Widget ([`MultiStopSearchWidget.jsx`](file:///c:/Users/darsh/OneDrive/Desktop/hackhaton/globetrotter-main/frontend/src/components/MultiStopSearchWidget.jsx))**:
+### [2026-08-22] - GlobeTrotter Multi-Stop & Multi-City Journey Engine
+- **GlobeTrotter Dynamic Multi-Stop Search Widget ([`MultiStopSearchWidget.jsx`](file:///c:/Users/darsh/OneDrive/Desktop/hackhaton/globetrotter-main/frontend/src/components/MultiStopSearchWidget.jsx))**:
   - Dynamic stop legs builder with "+ Add Another City / Stop" (supporting 2 to 6+ stops), city swap (⇄), and individual stop removal.
   - Autocomplete searchable modal for 19+ domestic & international airports (DEL, BOM, BLR, GOI, DXB, CDG, FCO, LHR, ZRH, SIN, BKK, HKT, KUL, HND, DPS, JFK, JAI, UDR, COK).
   - Travelers & Cabin Class selector popover (Adults, Children, Infants; Economy, Premium Economy, Business).
@@ -236,7 +236,7 @@ Frontend: React 19 (Vite), Lucide React, Custom Dark/Light theme system via `The
   - Stop-by-stop flight segments with airline badges, non-stop indicators, baggage allowances, free meal tags, and alternative flight accordion.
   - Recommended luxury & boutique hotel stays per destination stop with verified ratings, amenities, and room selection.
   - Curated sightseeing experiences with live "+ Add Pass" toggling and dynamic budget updating.
-  - Sticky MakeMyTrip Fare Breakdown Sidebar with base airfares, hotel stays, activity addons, GST/aviation taxes, multi-city bundle savings (8%), travel insurance toggle, and promo coupon engine (`MMTHACKATHON`, `GLOBETROTTER`, `ODODEAL`).
+  - Sticky GlobeTrotter Fare Breakdown Sidebar with base airfares, hotel stays, activity addons, GST/aviation taxes, multi-city bundle savings (8%), travel insurance toggle, and promo coupon engine (`GTHACKATHON`, `GLOBETROTTER`, `ODODEAL`).
 - **Confirmed Multi-City E-Ticket Pass & Itinerary Voucher Modal ([`BookingVoucherModal.jsx`](file:///c:/Users/darsh/OneDrive/Desktop/hackhaton/globetrotter-main/frontend/src/components/BookingVoucherModal.jsx))**:
   - High-res printable e-ticket pass with PNR code, passenger summary, flight segments, hotel vouchers, activity tickets, QR code, and print-ready layout.
 ### [2026-08-22] - Dashboard Loading Error Fix & Session Persistence
@@ -340,7 +340,7 @@ Frontend: React 19 (Vite), Lucide React, Custom Dark/Light theme system via `The
 ### [2026-08-22] - GitHub Remote Code Push
 - **Repository Target**: `https://github.com/DeepSanghvi13/globetrotter` (Branch: `main`).
 - **Pushed Core Components**:
-  - Complete MakeMyTrip multi-stop travel engine with layover nights, special fares, promo coupons, and warm terracotta UI.
+  - Complete GlobeTrotter multi-stop travel engine with layover nights, special fares, promo coupons, and warm terracotta UI.
   - Standalone train booking engine with IRCTC quotas & scannable PNR barcodes.
   - Standalone cab booking engine with outstation/airport chauffeur fleets & pick-up QR passes.
   - Full Express REST API backend (`backend/server.js`) on port 5000 with MongoDB Mongoose schemas (`User`, `Booking`, `Train`, `Cab`, `SupportTicket`).

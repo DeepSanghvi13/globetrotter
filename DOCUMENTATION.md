@@ -1,6 +1,6 @@
 # GlobeTrotter — Complete Technical & Functional Documentation
 
-Welcome to the comprehensive documentation for **GlobeTrotter** — a MakeMyTrip-inspired multi-stop travel engine built with React, Vite, Lucide icons, handwritten typography, custom glassmorphism, and a Node.js/Express REST API backend.
+Welcome to the comprehensive documentation for **GlobeTrotter** — a multi-stop travel engine built with React, Vite, Lucide icons, handwritten typography, custom glassmorphism, and a Node.js/Express REST API backend.
 
 ---
 
@@ -8,7 +8,7 @@ Welcome to the comprehensive documentation for **GlobeTrotter** — a MakeMyTrip
 
 1. [System Overview & Architecture](#1-system-overview--architecture)
 2. [Design System & Theme Engine](#2-design-system--theme-engine)
-3. [MakeMyTrip Multi-Stop Flight & Journey Engine](#3-makemytrip-multi-stop-flight--journey-engine)
+3. [GlobeTrotter Multi-Stop Flight & Journey Engine](#3-globetrotter-multi-stop-flight--journey-engine)
 4. [Barcode & QR Code Engine](#4-barcode--qr-code-engine)
 5. [Standalone Train Booking Engine](#5-standalone-train-booking-engine)
 6. [Standalone Cab & Taxi Booking Engine](#6-standalone-cab--taxi-booking-engine)
@@ -56,7 +56,7 @@ GlobeTrotter features a warm, editorial aesthetic with two curated color modes:
 
 ---
 
-## 3. MakeMyTrip Multi-Stop Flight & Journey Engine
+## 3. GlobeTrotter Multi-Stop Flight & Journey Engine
 
 Located in [`MultiStopSearchWidget.jsx`](file:///c:/Users/darsh/OneDrive/Desktop/hackhaton/globetrotter-main/frontend/src/components/MultiStopSearchWidget.jsx) and [`MultiStopResultsView.jsx`](file:///c:/Users/darsh/OneDrive/Desktop/hackhaton/globetrotter-main/frontend/src/components/MultiStopResultsView.jsx):
 
@@ -152,7 +152,7 @@ Located in [`AboutUs.jsx`](file:///c:/Users/darsh/OneDrive/Desktop/hackhaton/glo
 ### Key Features
 - Hero section with handwritten Caveat quote: *"From wanderlust dreams to seamless multi-stop journeys — travel without borders."*
 - Platform Key Milestones (`150k+ Journeys`, `19+ Hubs`, `4.98 Rating`, `99.9% Verification`).
-- 4-Step MakeMyTrip Multi-Stop Journey Blueprint (*Route Optimization*, *Hotel & Experience Integration*, *Single Checkout & Savings*, *Verified Barcode Pass*).
+- 4-Step GlobeTrotter Multi-Stop Journey Blueprint (*Route Optimization*, *Hotel & Experience Integration*, *Single Checkout & Savings*, *Verified Barcode Pass*).
 - Leadership team cards with role badges and biographies.
 
 ---
@@ -250,7 +250,7 @@ globetrotter-main/
         │   ├── CabBookingView.jsx    # Standalone Cab & Chauffeur View
         │   ├── MultiStopPackages.jsx # Curated Multi-City Tour Catalog
         │   ├── MultiStopResultsView.jsx# Interactive Search Results & Fare Breakdown
-        │   ├── MultiStopSearchWidget.jsx# MakeMyTrip Multi-Stop Search & Tabs
+        │   ├── MultiStopSearchWidget.jsx# GlobeTrotter Multi-Stop Search & Tabs
         │   ├── Navbar.jsx            # Translucent Glassmorphic Header Navigation
         │   ├── RiveAnimation.jsx     # Rive Canvas Animation Integration
         │   └── TrainBookingView.jsx  # Standalone IRCTC Train & Bullet Train View

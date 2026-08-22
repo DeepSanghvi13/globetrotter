@@ -57,7 +57,7 @@ const UserDashboard = () => {
   const { currentUser } = useAuth();
   const { isDark } = useTheme();
 
-  // Multi-Stop MakeMyTrip Search & Itinerary Engine State
+  // Multi-Stop GlobeTrotter Search & Itinerary Engine State
   const [currency, setCurrency] = useState('INR');
   const [activeTab, setActiveTab] = useState('flights'); // 'flights' | 'packages' | 'custom'
   const [activeSearch, setActiveSearch] = useState(null); // When set, displays MultiStopResultsView
@@ -242,7 +242,7 @@ const UserDashboard = () => {
     );
   }
 
-  // Traveler Homepage View (MakeMyTrip Multi-Stop Experience with Theme Harmony)
+  // Traveler Homepage View (GlobeTrotter Multi-Stop Experience with Theme Harmony)
   return (
     <div className="traveler-homepage-container">
       <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '0.75rem 1.5rem 2.5rem 1.5rem' }}>
@@ -353,7 +353,7 @@ const UserDashboard = () => {
           </div>
         </div>
 
-        {/* 1. MakeMyTrip Service Switcher Header */}
+        {/* 1. GlobeTrotter Service Switcher Header */}
         <MultiStopSearchWidget
           onSearch={handleSearchMultiStop}
           currency={currency}
@@ -383,7 +383,7 @@ const UserDashboard = () => {
           />
         )}
 
-        {/* 5. Curated MakeMyTrip Multi-Stop Packages */}
+        {/* 5. Curated GlobeTrotter Multi-Stop Packages */}
         {activeTab !== 'trains' && activeTab !== 'cabs' && (
           <MultiStopPackages
             currency={currency}

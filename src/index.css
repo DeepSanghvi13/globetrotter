@@ -102,7 +102,7 @@ body {
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 0.75rem 1.5rem 2.5rem 1.5rem;
 }
 
 /* Glassmorphic Cards */
@@ -296,6 +296,44 @@ body {
   color: var(--text-secondary);
 }
 
+/* Auth Pages Layout */
+.auth-wrapper {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 480px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: 2.5rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.auth-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
 /* Table Utilities */
 .table-responsive {
   width: 100%;
@@ -375,6 +413,32 @@ body {
 .strength-medium { width: 66%; background-color: #F59E0B; }
 .strength-strong { width: 100%; background-color: #10B981; }
 
+/* OTP Box Layout */
+.otp-container {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.otp-input {
+  width: 48px;
+  height: 56px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.otp-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(193, 68, 14, 0.2);
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
@@ -383,6 +447,77 @@ body {
 
 .animate-fade-in {
   animation: fadeIn 0.35s ease forwards;
+}
+
+/* Auth split-panel: show animation panel on larger screens */
+@media (min-width: 900px) {
+  .auth-anim-panel {
+    display: flex !important;
+  }
+
+  .auth-wrapper {
+    justify-content: center;
+  }
+}
+
+/* Rive Animation Transparency Fix */
+.rive-container {
+  display: flex;
+  alignItems: center;
+  justifyContent: center;
+  mix-blend-mode: multiply;
+}
+
+[data-theme="dark"] .rive-container canvas {
+  /* 
+    The Rive file has a hardcoded white background and is anti-aliased to white.
+    SVG filters ruin the anti-aliasing (jagged edges).
+    Instead, we invert the white background to black, hue-rotate to restore colors,
+    and then use 'screen' blend mode to make the black perfectly transparent against the dark UI!
+  */
+  filter: invert(1) hue-rotate(180deg) contrast(1.1);
+}
+
+[data-theme="dark"] .rive-container {
+  mix-blend-mode: screen;
+  background: transparent;
+}
+
+/* Traveler Homepage Backgrounds & Styling */
+.traveler-homepage-container {
+  min-height: calc(100vh - 72px);
+  position: relative;
+  width: 100%;
+  isolation: isolate;
+}
+
+.traveler-homepage-container::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  transition: background-image 0.3s ease, filter 0.3s ease;
+}
+
+/* Light Theme: Increased brightness on golden sunset coastal view */
+:root:not([data-theme="dark"]) .traveler-homepage-container::before,
+[data-theme="light"] .traveler-homepage-container::before {
+  background-image: 
+    linear-gradient(180deg, rgba(251, 248, 244, 0.12) 0%, rgba(251, 248, 244, 0.48) 35%, rgba(251, 248, 244, 0.88) 80%, rgba(251, 248, 244, 0.96) 100%),
+    url('/traveler-bg-light.png');
+  filter: brightness(1.14) contrast(1.03);
+}
+
+/* Dark Theme: Increased brightness on stars, moonlit sea & cliffside lights */
+[data-theme="dark"] .traveler-homepage-container::before {
+  background-image: 
+    linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(23, 26, 31, 0.52) 35%, rgba(0, 0, 0, 0.82) 80%, rgba(0, 0, 0, 0.94) 100%),
+    url('/traveler-bg-dark.png');
+  filter: brightness(1.22) contrast(1.06);
 }
 
 /* Glassmorphism Surface for Dashboard */
@@ -491,13 +626,13 @@ body {
   color: var(--text-primary);
 }
 
-/* MakeMyTrip Multi-Stop Responsive Enhancements */
+/* GlobeTrotter Multi-Stop Responsive Enhancements */
 @media (max-width: 960px) {
   .multi-stop-leg-card {
     grid-template-columns: auto 1fr 1fr !important;
     gap: 0.75rem !important;
   }
-  .mmt-results-container > div:last-child {
+  .gt-results-container > div:last-child {
     grid-template-columns: 1fr !important;
   }
 }
@@ -526,3 +661,5 @@ body {
     border: none !important;
   }
 }
+
+

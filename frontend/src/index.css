@@ -626,13 +626,13 @@ body {
   color: var(--text-primary);
 }
 
-/* MakeMyTrip Multi-Stop Responsive Enhancements */
+/* GlobeTrotter Multi-Stop Responsive Enhancements */
 @media (max-width: 960px) {
   .multi-stop-leg-card {
     grid-template-columns: auto 1fr 1fr !important;
     gap: 0.75rem !important;
   }
-  .mmt-results-container > div:last-child {
+  .gt-results-container > div:last-child {
     grid-template-columns: 1fr !important;
   }
 }
